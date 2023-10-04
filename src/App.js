@@ -16,7 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path='/AdminPage' element={<AdminPage/>} />
-          <Route path="/UserPage/12" element={<UserPage />} />
+          <Route path="/UserPage" element={<UserPage />} />
           <Route render={() => <Navigate to="/" />} />
         </Routes>
       </BrowserRouter>

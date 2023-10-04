@@ -4,7 +4,6 @@ import React, { useState } from "react";
 const AdminPage = () => {
   const [pdfLogs, setPdfLogs] = useState([
     // Dummy data for PDF logs for now
-    // data from backend
     {
       username: "User1",
       time: "	10/04/2023, 10:30 AM",
@@ -52,15 +51,15 @@ const AdminPage = () => {
 
   // function to handle PDF upload
   const handlePdfUpload = async (event) => {
-    // backend , upload pdf to backend for scan 
-    const pdfn = await (event.target.files[0].name) // name of the pdf
+    // backend PDF upload logic here 
+    const pdfn = await (event.target.files[0].name)
     const formattedTime = new Date().toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true });
 
     newPdfLog = {
-      username: "UserX", // backend ,replace with the actual username from backend
-      time: formattedTime, 
-      pdfName: pdfn,
-      summary: "New Summary", // backend, get actual summary from backend
+      username: "UserX", // replace with the actual username
+      time: formattedTime, // replace with the actual time
+      pdfName: pdfn, // Replace with the actual PDF name
+      summary: "New Summary",
       action: "Uploaded",
     };
 
@@ -75,7 +74,7 @@ const AdminPage = () => {
     if (fileInput) {
       fileInput.value = '';
     }
-    setPdfLogs([...pdfLogs, newPdfLog]); // backend, to upload the newly added pdf infomation to logs
+    setPdfLogs([...pdfLogs, newPdfLog]);
   }
 
 
@@ -96,19 +95,19 @@ const AdminPage = () => {
     const currentTime = new Date().toLocaleString();
     //  new log entry to append on pdf log
     const editedLog = {
-      username: "Admin", // backend , username of admin from backend
+      username: "Admin", // username of admin from backend
       time: currentTime,
       pdfName: selectedPdf.pdfName,
       summary: editedSummary,
       action: "Edited",
     };
 
-    // backend , update the PDF summary in pdfLogs state to backend
+    // update the PDF summary in pdfLogs state
     const updatedPdfLogs = pdfLogs.map((pdf) =>
       pdf === selectedPdf ? { ...pdf, summary: editedSummary } : pdf
     );
 
-    // backend, append the new log entry to backend
+    // append the new log entry
     updatedPdfLogs.push(editedLog);
 
     setPdfLogs(updatedPdfLogs);
@@ -125,7 +124,7 @@ const AdminPage = () => {
     <div className="bg-blue-200 h-screen flex flex-col ">
 
       <div className="container mx-auto mt-4 p-4 bg-white rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold">Welcome Admin !</h2>
+        <h2 className="text-2xl text-center font-semibold">Welcome Admin !</h2>
 
         {/* PDF Upload Section */}
         <div className="mt-4">

@@ -1,102 +1,95 @@
-import Navbar from './Navbar';
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
 
-const UserPage = () => {
-  const { userId } = useParams();
-  const [pdfLogs, setPdfLogs] = useState([]);
+function UserPage() {
   const [selectedPdf, setSelectedPdf] = useState(null);
-  const [fetchedSummary, setFetchedSummary] = useState('');
+  const [pdfSummary, setPdfSummary] = useState(''); 
 
-  useEffect(() => {
-    // Fetch user-specific PDF logs when the component mounts
-    fetch(`https://word-extractor-apis.onrender.com/files/${userId}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setPdfLogs(data);
-      })
-      .catch((error) => {
-        console.error('Error fetching user PDF logs:', error);
-      });
-  }, [userId]);
+  let file
+  
+  const handlePdfDrop = (event) => {
+    event.preventDefault();
+    file = event.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') {
+      setSelectedPdf(file);
+    }
+  };
 
-  const handleViewSummary = (pdf) => {
-    setSelectedPdf(pdf);
+  const handlePdfSelect = (event) => {
+    file = event.target.files[0];
+    if (file && file.type === 'application/pdf') {
+      setSelectedPdf(file);
+    }
+  };
 
-    // Fetch the summary from the backend using the fetch API
-    fetch(`https://word-extractor-apis.onrender.com/files/${userId}/${pdf.id}/summary`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setFetchedSummary(data.summary);
-      })
-      .catch((error) => {
-        console.error('Error fetching summary:', error);
-      });
+  const clearSelectedPdf = () => {
+    setSelectedPdf(null);
+    setPdfSummary(''); 
+  };
+
+  const handleUpload = () => {
+    if (!selectedPdf) {
+      alert('No PDF chosen. Please select a PDF file before uploading.');
+      return;
+    }
+    // backend, file should be on backend
+    const dummySummary = 'This is a dummy PDF summary.';
+
+    // backend, replace the summary with the backend summary
+    setPdfSummary(dummySummary);
+
+    setSelectedPdf(null);
   };
 
   return (
-    <div className="bg-blue-200 h-screen flex flex-col">
-      <div className="container mx-auto mt-4 p-4 bg-white rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold">Welcome User {userId}!</h2>
-
-        {/* PDF Logs Section */}
-        <div className="mt-4">
-          <h3 className="text-xl font-semibold">Your Uploaded PDFs</h3>
-          <table className="w-full border-collapse border border-blue-500 mt-4">
-            <thead>
-              <tr>
-                <th className="border border-blue-500 p-2">Action</th>
-                <th className="border border-blue-500 p-2">Time</th>
-                <th className="border border-blue-500 p-2">PDF Name</th>
-                <th className="border border-blue-500 p-2">Summary</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pdfLogs.map((pdf) => (
-                <tr key={pdf.id}>
-                  <td className="border border-blue-500 p-2">{pdf.action}</td>
-                  <td className="border border-blue-500 p-2">{pdf.time}</td>
-                  <td className="border border-blue-500 p-2">{pdf.pdfName}</td>
-                  <td className="border border-blue-500 p-2">
-                    <button
-                      onClick={() => handleViewSummary(pdf)}
-                      className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
-                    >
-                      Summary
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* PDF Summary Section */}
-        {selectedPdf && (
-          <div className="mt-4">
-            <h3 className="text-xl font-semibold">PDF Summary</h3>
-            <p>{selectedPdf.pdfName} Summary</p>
-            <textarea
-              value={fetchedSummary}
-              readOnly
-              className="w-full border-collapse border border-blue-500 mt-2 resize-both p-1 m-1"
-              style={{ minHeight: '100px', minWidth: '100px' }}
-            ></textarea>
+    <div className="bg-blue-200">
+      <h1 className="text-black text-center text-4xl font-bold  py-10">Welcome User !</h1>
+      <div
+        className="bg-slate-100 text-center mx-96 py-6 border-2 rounded-lg border-black space-y-5"
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handlePdfDrop}
+      >
+        {selectedPdf ? (
+          <div>
+            <p className="text-2xl bg-slate mb-4">PDF Selected: {selectedPdf.name}</p>
+            <button
+              onClick={clearSelectedPdf}
+              className="rounded-lg border-2 border-black text-black bg-red-300 px-20 py-2 hover:text-white hover:bg-red-500 font-medium active:bg-red-300 active:text-black"
+            >
+              Clear PDF
+            </button>
+          </div>
+        ) : (
+          <div>
+            <p className="text-3xl bg-slate my-4">Drop PDF here</p>
+            <p className="my-4">or</p>
+            <label className="cursor-pointer rounded-lg border-2 border-black text-black bg-blue-300 px-20 py-2 hover:text-white hover:bg-blue-500 font-medium active:bg-blue-300 active:text-black">
+              Select PDF from your device
+              <input
+                type="file"
+                accept=".pdf"
+                className="hidden"
+                onChange={handlePdfSelect}
+              />
+            </label>
           </div>
         )}
       </div>
+
+      <div className="flex justify-center items-center mt-4">
+        <button
+          onClick={handleUpload}
+          className="p-2 m-1 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
+        >
+          Upload
+        </button>
+      </div>
+
+      <p className="font-bold mx-32 p-1 m-1">PDF Summary:</p>
+      <div className="border-2 border-black mx-32 pb-80 rounded-md pl-2 m-1">
+        {pdfSummary}
+      </div>
     </div>
   );
-};
+}
 
 export default UserPage;
