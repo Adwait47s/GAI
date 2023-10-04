@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
-  const [isAdmin, setAdmin] = useState(true);
+  const [isAdmin, setAdmin] = useState(false);
 
   const navigate = useNavigate();
 
@@ -14,22 +15,55 @@ function Login() {
     // from backend check if the user is admin or not
     setAdmin(!isAdmin);
   }
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Perform validation and authentication here
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('Remember Me:', rememberMe);
+    // Create a data object for the API request
+    const data = {
+      email,
+      password,
+    };
 
-    // Clear the error message
-    setError('');
+    // Define the API endpoint URL based on whether it's for login or sign-up
+    const apiUrl = isAdmin
+      ? 'https://word-extractor-apis.onrender.com/login'
+      : 'https://word-extractor-apis.onrender.com/register';
 
-    
-    if (isAdmin) {
-      navigate('/AdminPage');
-    } else {
-      navigate('/UserPage');
+    try {
+      // Make a POST request to the API endpoint
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        // Successful login or sign-up
+        const result = await response.json();
+        const jwtToken = result.token;
+
+        // Store the token in local storage
+        localStorage.setItem('jwtToken', jwtToken);
+
+        // Clear the error message
+        setError('');
+
+        // Redirect to the appropriate page
+        if (isAdmin) {
+          navigate('/AdminPage');
+        } else {
+          navigate(`/UserPage/${12}`);
+        }
+      } else {
+        // Handle API error (e.g., incorrect credentials)
+        const errorData = await response.json();
+        setError(errorData.message || 'An error occurred');
+      }
+    } catch (error) {
+      // Handle network errors
+      setError('Network error. Please try again.');
     }
   };
 
@@ -70,7 +104,7 @@ function Login() {
                 required
               />
             </div>
-            <div className="flex justify-between items-center mb-4">
+            {/* <div className="flex justify-between items-center mb-4">
               <div>
                 <input
                   type="checkbox"
@@ -91,13 +125,21 @@ function Login() {
                   Forgot Password?
                 </button>
               </div>
-            </div>
+            </div> */}
             <div className="text-center">
               <button
                 type="submit"
                 className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
               >
                 Login
+              </button>
+            </div>
+            <div className="text-center">
+              <button
+                type="submit"
+                className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
+              >
+                Register
               </button>
             </div>
           </form>
