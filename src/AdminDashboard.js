@@ -1,231 +1,254 @@
-
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 const AdminPage = () => {
-  const [pdfLogs, setPdfLogs] = useState([
-    // Dummy data for PDF logs for now
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [editingDocument, setEditingDocument] = useState(null);
+  const [editedContent, setEditedContent] = useState({});
+  const [selectedDocument, setSelectedDocument] = useState({});
+
+  const dummyData = [
     {
-      username: "User1",
-      time: "	10/04/2023, 10:30 AM",
-      pdfName: "Document1.pdf",
-      summary: "This is a windows homepage screenshot",
-      action: "Uploaded",
+      email: 'user1@example.com',
+      documents: [
+        {
+          id: 1,
+          name: 'Document 1',
+          lastModified: '2023-10-05',
+          content: {
+            "asd": "2",
+            "asdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": "2",
+            "asdfv": "1"
+          },
+          summary: 'Summary of Document 1',
+        },
+        {
+          id: 2,
+          name: 'Document 2',
+          lastModified: '2023-10-06',
+          content: {
+            "asd": "2",
+            "asdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": "2",
+            "asdfv": "1"
+          },
+          summary: 'Summary of Document 2',
+        },
+      ],
     },
     {
-      username: "User2",
-      time: "	10/04/2023, 11:45 AM",
-      pdfName: "Document2.pdf",
-      // summary long for testing purpose
-      summary:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin at purus nec libero facilisis vulputate. Sed in interdum purus. Nulla facilisi. Sed sed risus non arcu gravida malesuada a in turpis. Pellentesque sed mauris nec justo aliquet rhoncus. Sed et libero quis lectus mattis ultrices. Fusce vitae vestibulum nunc. Fusce vitae lacus et tortor vehicula tincidunt vel eget lorem. Nunc efficitur arcu nec turpis blandit, in dignissim risus pharetra. Vestibulum auctor justo at justo feugiat, eget consectetur ligula interdum. Vivamus et lacus eget ligula malesuada egestas vel eu justo Suspendisse sed arcu at justo rhoncus bibendum. Maecenas dapibus arcu id dolor dignissim, in laoreet odio ultricies. .",
-      action: "Uploaded",
+      email: 'user2@example.com',
+      documents: [
+        {
+          id: 3,
+          name: 'Document 3',
+          lastModified: '2023-10-07',
+          content: {
+            "asd": "2",
+            "asdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": "2",
+            "asdfv": "1"
+          },
+          summary: 'Summary of Document 3',
+        },
+        {
+          id: 4,
+          name: 'Document 4',
+          lastModified: '2023-10-08',
+          content: {
+            "asd": "2",
+            "asdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": "2",
+            "asdfv": "1"
+          },
+          summary: 'Summary of Document 4',
+        },
+      ],
     },
     {
-      username: "User3",
-      time: "	10/04/2023, 02:15 PM",
-      pdfName: "Document3.pdf",
-      summary: "This is a blank document ",
-      action: "Uploaded",
+      email: 'user3@example.com',
+      documents: [
+        {
+          id: 5,
+          name: 'Document 5',
+          lastModified: '2023-10-09',
+          content: {
+            "asd": "2",
+            "asdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": "2",
+            "asdfv": "1"
+          },
+          summary: 'Summary of Document 5',
+        },
+        {
+          id: 6,
+          name: 'Document 6',
+          lastModified: '2023-10-10',
+          content: {
+            "asd": "2",
+            "asdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": "2",
+            "asdfv": "1"
+          },
+          summary: 'Summary of Document 6',
+        },
+      ],
     },
-    {
-      username: "User4",
-      time: "	10/04/2023, 03:30 PM",
-      pdfName: "Document4.pdf",
-      summary: "This is an image of the sky",
-      action: "Uploaded",
-    },
-    {
-      username: "User5",
-      time: "	10/04/2023, 04:45 PM",
-      pdfName: "Document5.pdf",
-      summary: "This is a personal Aadhar document",
-      action: "Uploaded",
-    },
-  ]); // state to store PDF logs
+  ];
 
-  const [selectedPdf, setSelectedPdf] = useState(null); // state to track selected PDF
-  const [editing, setEditing] = useState(false); // state to track editing mode
-  const [editedSummary, setEditedSummary] = useState(""); // state to store edited summary
-
-  var newPdfLog
-
-  // function to handle PDF upload
-  const handlePdfUpload = async (event) => {
-    // backend PDF upload logic here 
-    const pdfn = await (event.target.files[0].name)
-    const formattedTime = new Date().toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true });
-
-    newPdfLog = {
-      username: "UserX", // replace with the actual username
-      time: formattedTime, // replace with the actual time
-      pdfName: pdfn, // Replace with the actual PDF name
-      summary: "New Summary",
-      action: "Uploaded",
-    };
-
-  };
-
-  const handlePdfsubmit = () => {
-    if (!newPdfLog) {
-      alert("No PDF attached. Please select a PDF to upload.");
-      return;
+  const extractKeyValuePairs = (content) => {
+    // Extract key and value pairs from content object
+    const keyValuePairs = [];
+    for (const key in content) {
+      const value = content[key];
+      keyValuePairs.push({ key, value });
     }
-    const fileInput = document.querySelector('input[type="file"]');
-    if (fileInput) {
-      fileInput.value = '';
+    return keyValuePairs;
+  };
+
+  const handleUserClick = (user) => {
+    setSelectedUser(user);
+    setSelectedDocument({}); // Clear selected document when changing users
+  };
+
+  const handleEditClick = (document) => {
+    setEditingDocument(document);
+    setEditedContent(document.content);
+  };
+
+  const handleSaveClick = () => {
+    // Handle saving edited content here
+    if (editingDocument) {
+      // Update the content of the selected document with editedContent
+      editingDocument.content = editedContent;
+      console.log("Updated content:", editedContent);
     }
-    setPdfLogs([...pdfLogs, newPdfLog]);
-  }
-
-
-  // function to handle viewing PDF summary
-  const handleViewSummary = (pdf) => {
-    setSelectedPdf(pdf);
-    setEditing(false);
+    setEditingDocument(null); // Clear editing mode after saving
   };
 
-  // function to start editing the summary
-  const handleEditSummary = () => {
-    setEditing(true);
-    setEditedSummary(selectedPdf.summary);
+  const handleCancelClick = () => {
+    setEditingDocument(null); // Cancel editing mode
   };
 
-  // function to save the edited summary
-  const handleSaveSummary = () => {
-    const currentTime = new Date().toLocaleString();
-    //  new log entry to append on pdf log
-    const editedLog = {
-      username: "Admin", // username of admin from backend
-      time: currentTime,
-      pdfName: selectedPdf.pdfName,
-      summary: editedSummary,
-      action: "Edited",
-    };
-
-    // update the PDF summary in pdfLogs state
-    const updatedPdfLogs = pdfLogs.map((pdf) =>
-      pdf === selectedPdf ? { ...pdf, summary: editedSummary } : pdf
-    );
-
-    // append the new log entry
-    updatedPdfLogs.push(editedLog);
-
-    setPdfLogs(updatedPdfLogs);
-    setEditing(false);
-    setSelectedPdf({ ...selectedPdf, summary: editedSummary }); // Update the selectedPdf state with the edited summary
+  const handleSummaryClick = (document) => {
+    // Set the selected document when clicking the "Summary" button
+    setSelectedDocument(document);
   };
 
-  // function to cancel editing
-  const handleCancelEdit = () => {
-    setEditing(false);
+  const handleDownloadClick = (document) => {
+    // Handle downloading the document here
+    console.log("Downloading document:", document.name);
   };
 
   return (
-    <div className="bg-blue-200 h-screen flex flex-col ">
-
-      <div className="container mx-auto mt-4 p-4 bg-white rounded-lg shadow-lg">
-        <h2 className="text-2xl text-center font-semibold">Welcome Admin !</h2>
-
-        {/* PDF Upload Section */}
-        <div className="mt-4">
-          <label className="text-lg font-semibold">Upload New PDF:</label>
-          <div className="flex mt-1">
-            <input
-              type="file"
-              accept=".pdf"
-              onChange={handlePdfUpload}
-              className="border p-2 w-60"
-            />
-            <button
-              onClick={handlePdfsubmit}
-              className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
+    <div className="p-4 bg-blue-100">
+      <h1 className="text-2xl font-bold">User List</h1>
+      <table className="w-full mt-4 border-collapse border border-black">
+        <thead>
+          <tr>
+            <th className="border border-black text-center">User Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          {dummyData.map((user) => (
+            <tr
+              key={user.email}
+              onClick={() => handleUserClick(user)}
+              className="cursor-pointer hover:bg-gray-100"
             >
-              Upload
-            </button>
-          </div>
-        </div>
+              <td className="border border-black text-center p-2">{user.email}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-        {/* PDF Logs Section */}
-        <div className="mt-4">
-          <h3 className="text-xl font-semibold">PDF Upload Logs</h3>
-          <table className="w-full border-collapse border border-blue-500 mt-4">
+      {selectedUser && (
+        <div className="mt-8">
+          <h2 className="text-xl font-bold text-center">{`Documents Uploaded by ${selectedUser.email}`}</h2>
+          <table className="w-full mt-4 border-collapse border border-black">
             <thead>
               <tr>
-                <th className="border border-blue-500 p-2">Username</th>
-                <th className="border border-blue-500 p-2">Action</th>
-                <th className="border border-blue-500 p-2">Time</th>
-                <th className="border border-blue-500 p-2">PDF Name</th>
-                <th className="border border-blue-500 p-2">Summary</th>
+                <th className="border border-black text-center p-2">Name of Document</th>
+                <th className="border border-black text-center p-2">Last Modified</th>
+                <th className="border border-black text-center p-2">File Content</th>
+                <th className="border border-black text-center p-2">Edit</th>
+                <th className="border border-black text-center p-2">Summary View</th>
+                <th className="border border-black text-center p-2">Download</th> {/* Added Download column */}
               </tr>
             </thead>
             <tbody>
-              {pdfLogs.map((pdf, index) => (
-                <tr key={index}>
-                  <td className="border border-blue-500 p-2">{pdf.username}</td>
-                  <td className="border border-blue-500 p-2">{pdf.action}</td>
-                  <td className="border border-blue-500 p-2">{pdf.time}</td>
-                  <td className="border border-blue-500 p-2">{pdf.pdfName}</td>
-                  <td className="border border-blue-500 p-2">
+              {selectedUser.documents.map((document) => (
+                <tr key={document.id} className="border border-black">
+                  <td className="border border-black text-center p-2">{document.name}</td>
+                  <td className="border border-black text-center p-2">{document.lastModified}</td>
+                  <td className="border border-black text-center p-2">
+                    {editingDocument === document ? (
+                      <textarea
+                        value={JSON.stringify(editedContent, null, 2)}
+                        onChange={(e) => setEditedContent(JSON.parse(e.target.value))}
+                        className="w-full h-24 p-2 border border-gray-300"
+                      />
+                    ) : (
+                      <pre className="p-2">
+                        {JSON.stringify(document.content, null, 2).slice(1, -1).trim()}
+                      </pre>
+                    )}
+                  </td>
+                  <td className="border border-black text-center p-2">
+                    {editingDocument === document ? (
+                      <>
+                        <button
+                          onClick={handleSaveClick}
+                          className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 mr-2"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={handleCancelClick}
+                          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => handleEditClick(document)}
+                        className="py-1 px-2 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </td>
+                  <td className="border border-black text-center p-2">
                     <button
-                      onClick={() => handleViewSummary(pdf)}
-                      className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
+                      onClick={() => handleSummaryClick(document)}
+                      className="py-1 px-2 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
                     >
                       Summary
+                    </button>
+                  </td>
+                  <td className="border border-black text-center p-2">
+                    <button
+                      onClick={() => handleDownloadClick(document)}
+                      className="py-1 px-2 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
+                    >
+                      Download
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
-
-        {/* PDF Summary Section */}
-        {selectedPdf && (
-          <div className="mt-4">
-            <h3 className="text-xl font-semibold">PDF Summary</h3>
-            <p>{selectedPdf.pdfName} Summary</p>
-            {editing ? (
-              <>
+          {/* Display the selected document summary */}
+          <div className="text-center mt-4">
+            {selectedDocument.summary && (
+              <div>
+                <h3 className="text-lg font-bold">{`${selectedDocument.name} Summary`}</h3>
                 <textarea
-                  value={editedSummary}
-                  onChange={(e) => setEditedSummary(e.target.value)}
-                  className="w-full border-collapse border border-blue-500 mt-2 resize-both p-1 m-1"
-                  style={{ minHeight: "100px", minWidth: "100px" }}
-                ></textarea>
-                <div className="mt-2">
-                  <button
-                    onClick={handleSaveSummary}
-                    className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={handleCancelEdit}
-                    className="bg-red-500 text-white p-2 m-1 rounded"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <textarea
-                  value={selectedPdf.summary}
+                  value={selectedDocument.summary}
                   readOnly
                   className="w-full border-collapse border border-blue-500 mt-2 resize-both p-1 m-1"
                   style={{ minHeight: "100px", minWidth: "100px" }}
                 ></textarea>
-                <button
-                  onClick={handleEditSummary}
-                  className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
-                >
-                  Edit Summary
-                </button>
-              </>
+              </div>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
