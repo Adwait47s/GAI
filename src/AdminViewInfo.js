@@ -43,33 +43,31 @@ const AdminViewInfo = () => {
         setSelectedDocument(document);
         
         const centerX = (window.innerWidth - 500) / 2;
-const centerY = (window.innerHeight - 500) / 2;
+        const centerY = (window.innerHeight - 500) / 2;
 
-const summaryWindow = window.open(
-  '',
-  '_blank',
-  `width=500,height=500,resizable=yes,scrollbars=yes,left=${centerX},top=${centerY}`
-);
+        const summaryWindow = window.open(
+        '',
+        '_blank',
+        `width=500,height=500,resizable=yes,scrollbars=yes,left=${centerX},top=${centerY}`
+        );
 
-summaryWindow.document.open();
-summaryWindow.document.write(`
-  <html>
-  <head>
-    <title>Summary of ${document.name}</title>
-    <!-- Include Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-  </head>
-  <body class="bg-blue-100 p-4">
-    <h2 class="text-2xl font-semibold">Summary of ${document.name}</h2>
-    <div class="mt-4">
-      <textarea readonly class="w-full h-60 p-2 border border-blue-500 resize-both rounded-md">${document.summary}</textarea>
-    </div>
-  </body>
-  </html>
-`);
-
-summaryWindow.document.close();
-
+        summaryWindow.document.open();
+        summaryWindow.document.write(`
+        <html>
+        <head>
+            <title>Summary of ${document.name}</title>
+            <!-- Include Tailwind CSS -->
+            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+        </head>
+        <body class="bg-blue-100 p-4">
+            <h2 class="text-2xl font-semibold">Summary of ${document.name}</h2>
+            <div class="mt-4">
+            <textarea readonly class="w-full h-60 p-2 border border-blue-500 resize-both rounded-md">${document.summary}</textarea>
+            </div>
+        </body>
+        </html>
+        `);
+        summaryWindow.document.close();
     };
 
     const handleDownloadClick = (document) => {
