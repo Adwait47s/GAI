@@ -1,4 +1,3 @@
-// AdminViewInfo.js
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +6,7 @@ const AdminViewInfo = () => {
     const [editingDocument, setEditingDocument] = useState(null);
     const [editedContent, setEditedContent] = useState({});
     const [selectedDocument, setSelectedDocument] = useState({});
-
+    const [newKeyValuePair, setNewKeyValuePair] = useState({ key: '', value: '' }); // State to manage the new key-value pair
 
     const location = useLocation();
     const userEmail = location.state.userEmail;
@@ -23,6 +22,11 @@ const AdminViewInfo = () => {
         setEditedContent(document.content);
     };
 
+    const handleAddKeyValuePair = () => {
+        const updatedContent = { ...editedContent, [newKeyValuePair.key]: newKeyValuePair.value };
+        setEditedContent(updatedContent);
+        setNewKeyValuePair({ key: '', value: '' }); // Reset the new key-value pair
+    };
 
     const handleSaveClick = () => {
         // Handle saving edited content here
@@ -41,14 +45,14 @@ const AdminViewInfo = () => {
     const handleSummaryClick = (document) => {
         // Set the selected document when clicking the Summary button
         setSelectedDocument(document);
-        
+
         const centerX = (window.innerWidth - 500) / 2;
         const centerY = (window.innerHeight - 500) / 2;
 
         const summaryWindow = window.open(
-        '',
-        '_blank',
-        `width=500,height=500,resizable=yes,scrollbars=yes,left=${centerX},top=${centerY}`
+            '',
+            '_blank',
+            `width=500,height=500,resizable=yes,scrollbars=yes,left=${centerX},top=${centerY}`
         );
 
         summaryWindow.document.open();
@@ -74,6 +78,7 @@ const AdminViewInfo = () => {
         // backend , Handle downloading the document here
         console.log("Downloading document:", document.name);
     };
+
     return (
         <div className="p-4 bg-gradient-to-b from-blue-200 via-blue-300 to-blue-200">
             <button
@@ -123,15 +128,37 @@ const AdminViewInfo = () => {
                             <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                                 {document.lastModified}
                             </td>
-                            <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                            <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3" style={{ width: "200px", height: "150px", overflow: "auto" }}>
                                 {editingDocument === document ? (
-                                    <textarea
-                                        value={JSON.stringify(editedContent, null, 2)}
-                                        onChange={(e) => setEditedContent(JSON.parse(e.target.value))}
-                                        className="w-full h-24 p-2 border border-gray-300 rounded-md"
-                                    />
+                                    <div>
+                                        <textarea
+                                            value={JSON.stringify(editedContent, null, 2)}
+                                            onChange={(e) => setEditedContent(JSON.parse(e.target.value))}
+                                            className="w-full h-full p-2 border border-gray-300 rounded-md"
+                                            style={{ width: "100%", height: "100%", resize: "both" }}
+                                        />
+                                        <div className="flex mt-2">
+                                            <input
+                                                type="text"
+                                                placeholder="Key"
+                                                value={newKeyValuePair.key}
+                                                onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, key: e.target.value })}
+                                                className="w-1/2 mr-2 p-1 border border-gray-300 rounded-md"
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Value"
+                                                value={newKeyValuePair.value}
+                                                onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, value: e.target.value })}
+                                                className="w-1/2 p-1 border border-gray-300 rounded-md"
+                                            />
+                                            <button onClick={handleAddKeyValuePair} className="text-sm bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600">
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
                                 ) : (
-                                    <pre className="p-2">{JSON.stringify(document.content, null, 2).slice(1, -1).trim()}</pre>
+                                    <pre className="p-2" style={{ maxHeight: "150px", maxWidth: "200px", overflowY: "auto" }}>{JSON.stringify(document.content, null, 2).slice(1, -1).trim()}</pre>
                                 )}
                             </td>
                             <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
