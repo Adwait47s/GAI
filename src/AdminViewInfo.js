@@ -133,7 +133,14 @@ const AdminViewInfo = () => {
                                     <div>
                                         <textarea
                                             value={JSON.stringify(editedContent, null, 2)}
-                                            onChange={(e) => setEditedContent(JSON.parse(e.target.value))}
+                                            onChange={(e) => {
+                                                try {
+                                                    const parsedContent = JSON.parse(e.target.value);
+                                                    setEditedContent(parsedContent);
+                                                } catch (error) {
+                                                    alert('Invalid JSON format. Please check commas and "key":"value". Please enter valid JSON.');
+                                                }
+                                            }}
                                             className="w-full h-full p-2 border border-gray-300 rounded-md"
                                             style={{ width: "100%", height: "100%", resize: "both" }}
                                         />
@@ -158,9 +165,10 @@ const AdminViewInfo = () => {
                                         </div>
                                     </div>
                                 ) : (
-                                    <pre className="p-2" style={{ maxHeight: "150px", maxWidth: "200px", overflowY: "auto" }}>{JSON.stringify(document.content, null, 2).slice(1, -1).trim()}</pre>
+                                    <pre className="p-2" style={{ maxHeight: "120px", maxWidth: "200px", overflowY: "auto" }}>{JSON.stringify(document.content, null, 2).slice(1, -1).trim()}</pre>
                                 )}
                             </td>
+
                             <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                                 {editingDocument === document ? (
                                     <>
