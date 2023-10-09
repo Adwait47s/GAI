@@ -19,6 +19,7 @@ const AdminPage = () => {
         const document = {
           id: j,
           name: `Document ${j}`,
+          uploaded: `2023-10-${j < 10 ? '0' + j : j}`,
           lastModified: `2023-10-${j < 10 ? '0' + j : j}`,
           content: {
             asd: "2",
@@ -34,6 +35,7 @@ const AdminPage = () => {
     }
 
     const handleUserClick = (user) => {
+      console.log(user);
       navigate('/AdminViewInfo', { state: { userEmail: user.email, userDoc: user.documents } });
       //navigate('/AdminViewInfo', { state: { selectedUser: user }});
     };

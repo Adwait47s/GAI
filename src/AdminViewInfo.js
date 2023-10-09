@@ -176,7 +176,7 @@ const AdminViewInfo = () => {
                 onClick={handleGoBack}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md focus:ring focus:ring-indigo-200"
             >
-                Go Back
+                <span className='font-black'>&#10229;</span> Go Back
             </button>
             <h1 className="text-2xl font-semibold text-center mb-6 text-gray-800">
                 Documents Uploaded by {userEmail}
@@ -187,6 +187,9 @@ const AdminViewInfo = () => {
                     <tr>
                         <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                             Name of Document
+                        </th>
+                        <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                            Uploaded
                         </th>
                         <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                             Last Modified
@@ -214,6 +217,9 @@ const AdminViewInfo = () => {
                         >
                             <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                                 {document.name}
+                            </td>
+                            <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                                {document.uploaded}
                             </td>
                             <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                                 {document.lastModified}

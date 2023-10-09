@@ -2,18 +2,18 @@ import React from 'react';
 
 function Navbar() {
   return (
-    <nav className="!bg-white-200 p-4 ">
-      <div className="container mx-auto flex justify-between items-center">
+    <nav className="!bg-white-200 my-4 first-line:font-sans font-semibold">
+      <div className="flex justify-between text-lg">
         <div>
-          <a href="/" className="text-indigo-600 text-lg font-semibold">
+          <a href="/" className="ml-8 text-black hover:text-blue-600">
             Home
           </a>
         </div>
-        <div className="flex space-x-4">
-          <a href="/about" className="text-indigo-600">
+        <div className="flex space-x-6 pr-8">
+          <a href="/about" className=" text-black hover:text-blue-600">
             About Us
           </a>
-          <a href="/contact" className="text-indigo-600">
+          <a href="/contact" className=" text-black hover:text-blue-600">
             Contact
           </a>
         </div>
