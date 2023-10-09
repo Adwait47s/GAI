@@ -1,9 +1,10 @@
 // src/App.js
 import React from 'react';
-import Login from './login';
-import AdminPage from './AdminDashboard';
-import UserPage from './UserDashboard';
-import Navbar from './Navbar';
+import Login from './login.js';
+import AdminPage from './AdminDashboard.js';
+import UserPage from './UserDashboard.js';
+import Navbar from './Navbar.js';
+import Footer from './Footer.js';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AdminViewInfo from './AdminViewInfo';
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="/AdminViewInfo" element={<AdminViewInfo />}/>
           <Route render={() => <Navigate to="/" />} />
         </Routes>
+        <Footer/>
       </BrowserRouter>
 
     </div>
