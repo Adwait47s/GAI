@@ -16,6 +16,9 @@ function Navbar() {
           <a href="/contact" className=" text-black hover:text-blue-600">
             Contact
           </a>
+          <a href="/" className=" text-black hover:text-blue-600">
+            Logout
+          </a>
         </div>
 
 
