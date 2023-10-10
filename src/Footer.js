@@ -36,38 +36,16 @@ function Footer() {
 
         <div>
           <p className='text-black font-bold pb-2 text-center'>Quick Links</p>
-          <div className='flex space-x-5'>
+          <div className='text-center'>
             <div>
-              <a href='' className='text-blue-600 hover:underline'>
+              <a href='' className='text-blue-600  hover:underline'>
                 Link1
               </a><br></br>
               <a href='' className='text-blue-600 hover:underline'>
-                Link1
+                Link2
               </a><br></br>
               <a href='' className='text-blue-600 hover:underline'>
-                Link1
-              </a>
-            </div>
-            <div>
-              <a href='' className='text-blue-600 hover:underline'>
-                Link1
-              </a><br></br>
-              <a href='' className='text-blue-600 hover:underline'>
-                Link1
-              </a><br></br>
-              <a href='' className='text-blue-600 hover:underline'>
-                Link1
-              </a>
-            </div>
-            <div>
-              <a href='' className='text-blue-600 hover:underline'>
-                Link1
-              </a><br></br>
-              <a href='' className='text-blue-600 hover:underline'>
-                Link1
-              </a><br></br>
-              <a href='' className='text-blue-600 hover:underline'>
-                Link1
+                Link3
               </a>
             </div>
           </div>
