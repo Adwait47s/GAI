@@ -2,17 +2,16 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
-const AdminViewInfo = () => {
+const AdminDocuments = () => {
+    const location = useLocation();
+    let AdminDoc = location.state?.AdminDoc || [];
+    const navigate = useNavigate();
+
     const [editingDocument, setEditingDocument] = useState(null);
     const [editedContent, setEditedContent] = useState({});
     const [selectedDocument, setSelectedDocument] = useState({});
     const [newKeyValuePair, setNewKeyValuePair] = useState({ key: '', value: '' });
     const [showEditWindow, setShowEditWindow] = useState(false);
-
-    const location = useLocation();
-    const userEmail = location.state.userEmail;
-    const userDoc = location.state.userDoc;
-    const navigate = useNavigate();
 
     const handleGoBack = () => {
         navigate(-1); // Previous page
@@ -69,28 +68,27 @@ const AdminViewInfo = () => {
 
                 // Delete the old key
                 delete updatedContent[oldKey];
-              } else {
+            } else {
                 // If the old key is the same as the new key, just update the value
                 updatedContent[oldKey] = newValue;
-              }
+            }
 
             setEditedContent(updatedContent);
         };
 
-
         const handleAddKeyValuePair = () => {
-        const key = newKeyValuePair.key;
-        const value = newKeyValuePair.value;
+            const key = newKeyValuePair.key;
+            const value = newKeyValuePair.value;
 
-        // Check if the key already exists in the editedContent object
-        if (editedContent[key] !== undefined) {
-            alert(`Key "${key}" already exists. Please use a different key.`);
-            setNewKeyValuePair({ key: '', value: value });
-        } else {
-            const updatedContent = { ...editedContent, [key]: value };
-            setEditedContent(updatedContent);
-            setNewKeyValuePair({ key: '', value: '' });
-        }
+            // Check if the key already exists in the editedContent object
+            if (editedContent[key] !== undefined) {
+                alert(`Key "${key}" already exists. Please use a different key.`);
+                setNewKeyValuePair({ key: '', value: value });
+            } else {
+                const updatedContent = { ...editedContent, [key]: value };
+                setEditedContent(updatedContent);
+                setNewKeyValuePair({ key: '', value: '' });
+            }
         };
 
         const handleSaveClick = () => {
@@ -112,65 +110,63 @@ const AdminViewInfo = () => {
                 <div className="bg-white p-4 rounded-lg shadow-md">
                     <h2 className="text-2xl font-semibold mb-4">Edit {editingDocument.name}</h2>
                     <div className="max-h-80 overflow-auto">
-                    <table className="w-full mb-4">
-                        <tbody>
-                            {Object.entries(editedContent).map(([key, value], index) => (
-                                 <tr key={index}>
-                                 <td className="w-1/2 text-right pr-2">
-                                     <input
-                                         type="text"
-                                         value={key}
-                                         //onChange={(e) => handleEditKey(key, e.target.value, value)}
-                                         className="w-full border border-gray-300 rounded-md p-1"
-                                     />
-                                 </td>
-                                 <td className="w-1/2">
-                                     <input
-                                         type="text"
-                                         value={value}
-                                         onChange={(e) => handleEditKey(key, key, e.target.value)}
-                                         className="w-full border border-gray-300 rounded-md p-1"
-                                     />
-                                 </td>
-                             </tr>
-                            ))}
-                            <tr>
-                                <td className="w-1/3 text-right pr-2">
-                                    <input
-                                        type="text"
-                                        placeholder="New Key"
-                                        value={newKeyValuePair.key}
-                                        onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, key: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-md p-1"
-                                    />
-                                </td>
-                                <td className="w-2/3">
-                                    <input
-                                        type="text"
-                                        placeholder="New Value"
-                                        value={newKeyValuePair.value}
-                                        onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, value: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-md p-1"
-                                    />
-                                </td>
-                                <button onClick={handleAddKeyValuePair} className="text-sm bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600">
-                                    +
-                                </button>
-                            </tr>
-                        </tbody>
-                        
-                    </table>
+                        <table className="w-full mb-4">
+                            <tbody>
+                                {Object.entries(editedContent).map(([key, value], index) => (
+                                    <tr key={index}>
+                                        <td className="w-1/2 text-right pr-2">
+                                            <input
+                                                type="text"
+                                                value={key}
+                                                className="w-full border border-gray-300 rounded-md p-1"
+                                            />
+                                        </td>
+                                        <td className="w-1/2">
+                                            <input
+                                                type="text"
+                                                value={value}
+                                                onChange={(e) => handleEditKey(key, key, e.target.value)}
+                                                className="w-full border border-gray-300 rounded-md p-1"
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
+                                <tr>
+                                    <td className="w-1/3 text-right pr-2">
+                                        <input
+                                            type="text"
+                                            placeholder="New Key"
+                                            value={newKeyValuePair.key}
+                                            onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, key: e.target.value })}
+                                            className="w-full border border-gray-300 rounded-md p-1"
+                                        />
+                                    </td>
+                                    <td className="w-2/3">
+                                        <input
+                                            type="text"
+                                            placeholder="New Value"
+                                            value={newKeyValuePair.value}
+                                            onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, value: e.target.value })}
+                                            className="w-full border border-gray-300 rounded-md p-1"
+                                        />
+                                    </td>
+                                    <button onClick={handleAddKeyValuePair} className="text-sm bg-blue-500 text-white px-2 py-1 rounded-md hover-bg-blue-600">
+                                        +
+                                    </button>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <div className="text-center">
                         <button
                             onClick={handleSaveClick}
-                            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 mr-2"
+                            className="bg-green-500 text-white px-4 py-2 rounded-md hover-bg-green-600 mr-2"
                         >
                             Save
                         </button>
                         <button
                             onClick={handleCancelClick}
-                            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                            className="bg-red-500 text-white px-4 py-2 rounded-md hover-bg-red-600"
                         >
                             Cancel
                         </button>
@@ -180,18 +176,32 @@ const AdminViewInfo = () => {
         );
     };
 
-
+    if (AdminDoc.length === 0) {
+        return (
+            <div className="p-4 bg-gradient-to-b from-blue-200 via-blue-300 to-blue-200">
+                <button
+                    onClick={handleGoBack}
+                    className="bg-indigo-600 hover-bg-indigo-700 text-white px-4 py-2 rounded-md focus-ring focus-ring-indigo-200"
+                >
+                    <span className='font-black'>&#10229;</span> Go Back
+                </button>
+                <h1 className="text-2xl font-semibold text-center mb-6 text-gray-800">
+                    No Documents Uploaded
+                </h1>
+            </div>
+        );
+    }
 
     return (
         <div className="p-4 bg-gradient-to-b from-blue-200 via-blue-300 to-blue-200">
             <button
                 onClick={handleGoBack}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md focus:ring focus:ring-indigo-200"
+                className="bg-indigo-600 hover-bg-indigo-700 text-white px-4 py-2 rounded-md focus-ring focus-ring-indigo-200"
             >
                 <span className='font-black'>&#10229;</span> Go Back
             </button>
             <h1 className="text-2xl font-semibold text-center mb-6 text-gray-800">
-                Documents Uploaded by {userEmail}
+                Documents Uploaded by Admin
             </h1>
 
             <table className="w-full mt-4 bg-white rounded-lg shadow">
@@ -221,40 +231,38 @@ const AdminViewInfo = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {userDoc.map((document, index) => (
+                    {AdminDoc.map((document, index) => (
                         <tr
                             key={document.id}
                             className={`${index % 2 === 0 ? 'bg-blue-100' : 'bg-blue-200'
-                                } hover:bg-blue-300 transition duration-300`}
+                                } hover-bg-blue-300 transition duration-300`}
                         >
-                            <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                            <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3" style={{ maxWidth: '30px',  overflowY: 'auto'}}>
                                 {document.name}
                             </td>
-                            <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                            <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3" style={{ maxWidth: '30px', overflowY: 'auto'}}>
                                 {document.uploaded}
                             </td>
-                            <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                            <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3" style={{ maxWidth: '30px',  overflowY: 'auto' }}>
                                 {document.lastModified}
                             </td>
                             <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3" style={{ width: "200px", height: "150px", overflow: "auto" }}>
-
-                                <pre className="p-2" style={{ maxHeight: "120px", maxWidth: "200px", overflowY: "auto" }}>{JSON.stringify(document.content, null, 2).slice(1, -1).trim()}</pre>
-
+                                <pre className="p-2" style={{ maxHeight: "120px", maxWidth: "200px", overflowY: "auto" }}>
+                                    {JSON.stringify(document.content, null, 2).slice(1, -1).trim()}
+                                </pre>
                             </td>
                             <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-
                                 <button
                                     onClick={() => handleEditClick(document)}
-                                    className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus:ring focus:ring-indigo-200"
+                                    className="py-2 px-4 bg-indigo-600 hover-bg-indigo-700 text-white rounded-md focus-ring focus-ring-indigo-200"
                                 >
                                     Edit
                                 </button>
-
                             </td>
                             <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                                 <button
                                     onClick={() => handleSummaryClick(document)}
-                                    className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus:ring focus:ring-indigo-200"
+                                    className="py-2 px-4 bg-indigo-600 hover-bg-indigo-700 text-white rounded-md focus-ring focus-ring-indigo-200"
                                 >
                                     Summary
                                 </button>
@@ -262,7 +270,7 @@ const AdminViewInfo = () => {
                             <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                                 <button
                                     onClick={() => handleDownloadClick(document)}
-                                    className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus:ring focus:ring-indigo-200"
+                                    className="py-2 px-4 bg-indigo-600 hover-bg-indigo-700 text-white rounded-md focus-ring focus-ring-indigo-200"
                                 >
                                     Download
                                 </button>
@@ -277,4 +285,4 @@ const AdminViewInfo = () => {
     );
 };
 
-export default AdminViewInfo;
+export default AdminDocuments;
