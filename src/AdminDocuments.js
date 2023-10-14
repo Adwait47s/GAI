@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 const AdminDocuments = () => {
     const location = useLocation();
-    let AdminDoc = location.state?.AdminDoc || []; // from backend
+    let AdminDoc = location.state?.AdminDoc || []; 
     const navigate = useNavigate();
 
     const [editingDocument, setEditingDocument] = useState(null);
@@ -66,10 +66,10 @@ const AdminDocuments = () => {
                 // copy of the object with the new key and value
                 updatedContent[newKey] = newValue;
 
-                // Delete the old key
+                // delete the old key
                 delete updatedContent[oldKey];
             } else {
-                // If the old key is the same as the new key, just update the value
+                // if the old key is the same as the new key, just update the value
                 updatedContent[oldKey] = newValue;
             }
 
@@ -77,7 +77,6 @@ const AdminDocuments = () => {
         };
 
         const handleDeleteKey = (key) => {
-            // Delete the key from editedContent
             const updatedContent = { ...editedContent };
             delete updatedContent[key];
             setEditedContent(updatedContent);
@@ -87,7 +86,7 @@ const AdminDocuments = () => {
             const key = newKeyValuePair.key;
             const value = newKeyValuePair.value;
 
-            // Check if the key already exists in the editedContent object
+            // check if the key already exists 
             if (editedContent[key] !== undefined) {
                 alert(`Key "${key}" already exists. Please use a different key.`);
                 setNewKeyValuePair({ key: '', value: value });
@@ -101,7 +100,7 @@ const AdminDocuments = () => {
         const handleSaveClick = () => {
             const key = newKeyValuePair.key;
             const value = newKeyValuePair.value;
-
+            // unsaved changes
             if (key.trim() !== '' || value.trim() !== '') {
                 alert("Click + button to save the changes")
                 return;
@@ -161,7 +160,7 @@ const AdminDocuments = () => {
                                             placeholder="New Key"
                                             value={newKeyValuePair.key}
                                             onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, key: e.target.value })}
-                                            className="w-full border border-gray-300 rounded-md p-1 text-lg" // Adjusted padding
+                                            className="w-full border border-gray-300 rounded-md p-1 text-lg" 
                                         />
                                     </td>
                                     <td className="w-2/3">
@@ -170,7 +169,7 @@ const AdminDocuments = () => {
                                             placeholder="New Value"
                                             value={newKeyValuePair.value}
                                             onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, value: e.target.value })}
-                                            className="w-full border border-gray-300 rounded-md p-1 text-lg" // Adjusted padding
+                                            className="w-full border border-gray-300 rounded-md p-1 text-lg" 
                                         />
                                     </td>
 

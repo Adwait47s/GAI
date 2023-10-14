@@ -134,7 +134,7 @@ const AdminViewInfo = () => {
                                             <input
                                                 type="text"
                                                 value={key}
-                                                className="w-full border border-gray-300 rounded-md p-1 text-lg" // Adjusted padding
+                                                className="w-full border border-gray-300 rounded-md p-1 text-lg" 
                                             />
                                         </td>
                                         <td className="w-1/2">
@@ -142,7 +142,7 @@ const AdminViewInfo = () => {
                                                 type="text"
                                                 value={value}
                                                 onChange={(e) => handleEditKey(key, key, e.target.value)}
-                                                className="w-full border border-gray-300 rounded-md p-1 text-lg" // Adjusted padding
+                                                className="w-full border border-gray-300 rounded-md p-1 text-lg"
                                             />
                                         </td>
                                         <td>
@@ -162,7 +162,7 @@ const AdminViewInfo = () => {
                                             placeholder="New Key"
                                             value={newKeyValuePair.key}
                                             onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, key: e.target.value })}
-                                            className="w-full border border-gray-300 rounded-md p-1 text-lg" // Adjusted padding
+                                            className="w-full border border-gray-300 rounded-md p-1 text-lg" 
                                         />
                                     </td>
                                     <td className="w-2/3">
@@ -171,7 +171,7 @@ const AdminViewInfo = () => {
                                             placeholder="New Value"
                                             value={newKeyValuePair.value}
                                             onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, value: e.target.value })}
-                                            className="w-full border border-gray-300 rounded-md p-1 text-lg" // Adjusted padding
+                                            className="w-full border border-gray-300 rounded-md p-1 text-lg"
                                         />
                                     </td>
 

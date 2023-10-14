@@ -1,14 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 
-let uploadedDocumentsAdmin = []; 
+let uploadedDocumentsAdmin = [];  // backend fetch documents uploaded by admin into this array
 
 const AdminPage = () => {
   const navigate = useNavigate();
   
   const [selectedPdf, setSelectedPdf] = useState(null);
-
-  
 
   const dummyData = [];
   // JavaScript script to generate dummy data
@@ -84,7 +82,6 @@ const AdminPage = () => {
 
     uploadedDocumentsAdmin.push(newDocument);
     setSelectedPdf(null);
-    console.log(uploadedDocumentsAdmin);
   };
 
   const handleUserClick = (user) => {
