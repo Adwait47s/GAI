@@ -33,7 +33,7 @@ const AdminViewInfo = () => {
         const summaryWindow = window.open(
             '',
             '_blank',
-            `width=500,height=450,resizable=yes,scrollbars=yes,left=${centerX},top=${centerY}`
+            `width=750,height=500,resizable=yes,scrollbars=yes,left=${centerX},top=${centerY}`
         );
 
         summaryWindow.document.open();
@@ -46,7 +46,7 @@ const AdminViewInfo = () => {
             <body class="bg-blue-100 p-4">
                 <h2 class="text-2xl font-semibold">Summary of ${document.name}</h2>
                 <div class="mt-4">
-                    <textarea readonly class="w-full h-60 p-2 border border-blue-500 resize-both rounded-md">${document.summary}</textarea>
+                    <textarea readonly class="w-full h-full p-2 border border-blue-500 resize-both rounded-md">${document.summary}</textarea>
                 </div>
             </body>
             </html>
@@ -54,9 +54,6 @@ const AdminViewInfo = () => {
         summaryWindow.document.close();
     };
 
-    const handleDownloadClick = (document) => {
-        console.log("Downloading document:", document.name);
-    };
 
     const renderEditWindow = () => {
         if (!showEditWindow || !editingDocument) return null;
@@ -69,31 +66,48 @@ const AdminViewInfo = () => {
 
                 // Delete the old key
                 delete updatedContent[oldKey];
-              } else {
+            } else {
                 // If the old key is the same as the new key, just update the value
                 updatedContent[oldKey] = newValue;
-              }
+            }
 
             setEditedContent(updatedContent);
         };
 
+        const handleDeleteKey = (key) => {
+            // Delete the key from editedContent
+            const updatedContent = { ...editedContent };
+            delete updatedContent[key];
+            setEditedContent(updatedContent);
+        };
 
         const handleAddKeyValuePair = () => {
-        const key = newKeyValuePair.key;
-        const value = newKeyValuePair.value;
 
-        // Check if the key already exists in the editedContent object
-        if (editedContent[key] !== undefined) {
-            alert(`Key "${key}" already exists. Please use a different key.`);
-            setNewKeyValuePair({ key: '', value: value });
-        } else {
-            const updatedContent = { ...editedContent, [key]: value };
-            setEditedContent(updatedContent);
-            setNewKeyValuePair({ key: '', value: '' });
-        }
+            const key = newKeyValuePair.key;
+            const value = newKeyValuePair.value;
+
+            if (key.trim() === '' || value.trim() === '') {
+                // Check if the key or value is empty (after trimming whitespace)
+                alert("Key and Value cannot be empty.");
+            } else if (editedContent[key] !== undefined) {
+                alert(`Key "${key}" already exists. Please use a different key.`);
+            } else {
+                const updatedContent = { ...editedContent, [key]: value };
+                setEditedContent(updatedContent);
+                setNewKeyValuePair({ key: '', value: '' });
+            }
+
         };
 
         const handleSaveClick = () => {
+            const key = newKeyValuePair.key;
+            const value = newKeyValuePair.value;
+
+            if (key.trim() !== '' || value.trim() !== '') {
+                alert("Click + button to save the changes")
+                return;
+            }
+
             if (editingDocument) {
                 editingDocument.content = editedContent;
                 console.log("Updated content:", editedContent);
@@ -109,57 +123,64 @@ const AdminViewInfo = () => {
 
         return (
             <div className="absolute top-0 left-0 w-screen h-screen bg-gray-200 bg-opacity-80 flex items-center justify-center">
-                <div className="bg-white p-4 rounded-lg shadow-md">
+                <div className="bg-white p-4 rounded-lg shadow-md w-2/4 h-2/4"> 
                     <h2 className="text-2xl font-semibold mb-4">Edit {editingDocument.name}</h2>
-                    <div className="max-h-80 overflow-auto">
-                    <table className="w-full mb-4">
-                        <tbody>
-                            {Object.entries(editedContent).map(([key, value], index) => (
-                                 <tr key={index}>
-                                 <td className="w-1/2 text-right pr-2">
-                                     <input
-                                         type="text"
-                                         value={key}
-                                         //onChange={(e) => handleEditKey(key, e.target.value, value)}
-                                         className="w-full border border-gray-300 rounded-md p-1"
-                                     />
-                                 </td>
-                                 <td className="w-1/2">
-                                     <input
-                                         type="text"
-                                         value={value}
-                                         onChange={(e) => handleEditKey(key, key, e.target.value)}
-                                         className="w-full border border-gray-300 rounded-md p-1"
-                                     />
-                                 </td>
-                             </tr>
-                            ))}
-                            <tr>
-                                <td className="w-1/3 text-right pr-2">
-                                    <input
-                                        type="text"
-                                        placeholder="New Key"
-                                        value={newKeyValuePair.key}
-                                        onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, key: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-md p-1"
-                                    />
-                                </td>
-                                <td className="w-2/3">
-                                    <input
-                                        type="text"
-                                        placeholder="New Value"
-                                        value={newKeyValuePair.value}
-                                        onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, value: e.target.value })}
-                                        className="w-full border border-gray-300 rounded-md p-1"
-                                    />
-                                </td>
-                                <button onClick={handleAddKeyValuePair} className="text-sm bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-600">
-                                    +
-                                </button>
-                            </tr>
-                        </tbody>
-                        
-                    </table>
+                    <div className="max-h-60 overflow-auto"> 
+                        <table className="w-full mb-4">
+                            <tbody>
+                                {Object.entries(editedContent).map(([key, value], index) => (
+                                    <tr key={index}>
+                                        <td className="w-1/2 text-right pr-2">
+                                            <input
+                                                type="text"
+                                                value={key}
+                                                className="w-full border border-gray-300 rounded-md p-1 text-lg" // Adjusted padding
+                                            />
+                                        </td>
+                                        <td className="w-1/2">
+                                            <input
+                                                type="text"
+                                                value={value}
+                                                onChange={(e) => handleEditKey(key, key, e.target.value)}
+                                                className="w-full border border-gray-300 rounded-md p-1 text-lg" // Adjusted padding
+                                            />
+                                        </td>
+                                        <td>
+                                            <button
+                                                onClick={() => handleDeleteKey(key)}
+                                                className="text-lg bg-red-500 text-white rounded-md hover:bg-red-600 ml-1 h-8 w-8 p-auto "
+                                            >
+                                                -
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                <tr>
+                                    <td className="w-1/3 text-right pr-2">
+                                        <input
+                                            type="text"
+                                            placeholder="New Key"
+                                            value={newKeyValuePair.key}
+                                            onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, key: e.target.value })}
+                                            className="w-full border border-gray-300 rounded-md p-1 text-lg" // Adjusted padding
+                                        />
+                                    </td>
+                                    <td className="w-2/3">
+                                        <input
+                                            type="text"
+                                            placeholder="New Value"
+                                            value={newKeyValuePair.value}
+                                            onChange={(e) => setNewKeyValuePair({ ...newKeyValuePair, value: e.target.value })}
+                                            className="w-full border border-gray-300 rounded-md p-1 text-lg" // Adjusted padding
+                                        />
+                                    </td>
+
+                                    <button onClick={handleAddKeyValuePair} className="text-lg bg-blue-500 text-white rounded-md hover:bg-blue-600 ml-1 mt-1 w-8 h-8 p-auto">
+                                        +
+                                    </button>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                     <div className="text-center">
                         <button
@@ -170,13 +191,14 @@ const AdminViewInfo = () => {
                         </button>
                         <button
                             onClick={handleCancelClick}
-                            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                            className="bg-red-500 text-white px-4 py-2 rounded-md hover-bg-red-600"
                         >
                             Cancel
                         </button>
                     </div>
                 </div>
             </div>
+
         );
     };
 
@@ -188,7 +210,7 @@ const AdminViewInfo = () => {
                 onClick={handleGoBack}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md focus:ring focus:ring-indigo-200"
             >
-                <span className='font-black'>&#10229;</span> Go Back
+                <span className='font-black '>&#10229;</span> Go Back
             </button>
             <h1 className="text-2xl font-semibold text-center mb-6 text-gray-800">
                 Documents Uploaded by {userEmail}
@@ -206,18 +228,16 @@ const AdminViewInfo = () => {
                         <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                             Last Modified
                         </th>
-                        <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                        {/* <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                             File Content
-                        </th>
+                        </th> */}
                         <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                            Edit
+                            View/Edit
                         </th>
                         <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                             Summary View
                         </th>
-                        <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                            Download
-                        </th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -236,18 +256,18 @@ const AdminViewInfo = () => {
                             <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                                 {document.lastModified}
                             </td>
-                            <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3" style={{ width: "200px", height: "150px", overflow: "auto" }}>
+                            {/* <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3" style={{ width: "200px", height: "150px", overflow: "auto" }}>
 
                                 <pre className="p-2" style={{ maxHeight: "120px", maxWidth: "200px", overflowY: "auto" }}>{JSON.stringify(document.content, null, 2).slice(1, -1).trim()}</pre>
 
-                            </td>
+                            </td> */}
                             <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
 
                                 <button
                                     onClick={() => handleEditClick(document)}
                                     className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus:ring focus:ring-indigo-200"
                                 >
-                                    Edit
+                                    View / Edit
                                 </button>
 
                             </td>
@@ -259,14 +279,7 @@ const AdminViewInfo = () => {
                                     Summary
                                 </button>
                             </td>
-                            <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                                <button
-                                    onClick={() => handleDownloadClick(document)}
-                                    className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus:ring focus:ring-indigo-200"
-                                >
-                                    Download
-                                </button>
-                            </td>
+
                         </tr>
                     ))}
                 </tbody>

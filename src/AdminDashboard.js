@@ -162,7 +162,7 @@ const AdminPage = () => {
                 key={user.email}
                 onClick={() => handleUserClick(user)}
                 className={`cursor-pointer ${index % 2 === 0 ? 'bg-blue-100' : 'bg-blue-200'
-                  } hover-bg-blue-300 transition duration-300`}
+                  } hover:bg-blue-300 transition duration-100`}
               >
                 <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                   {user.email}
