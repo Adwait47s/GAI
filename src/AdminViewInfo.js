@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import Axios from "axios";
-
+import Navbar from './Navbar.js';
 
 const AdminViewInfo = () => {
     const [editingDocument, setEditingDocument] = useState(null);
@@ -10,6 +10,7 @@ const AdminViewInfo = () => {
     const [selectedDocument, setSelectedDocument] = useState({});
     const [newKeyValuePair, setNewKeyValuePair] = useState({ key: '', value: '' });
     const [showEditWindow, setShowEditWindow] = useState(false);
+    const [showNonEditWindow, setShowNonEditWindow] = useState(false);
     const [jwtToken] = useState(localStorage.getItem("jwtToken"));
 
     const location = useLocation();
@@ -51,12 +52,22 @@ const AdminViewInfo = () => {
 
     const handleEditClick = (document) => {
         // Create a copy of document.content without the 'summary' key
-        const { summary, ...editedContent } = document.content;
+        const { summary, pending, ...editedContent } = document.content;
 
         setEditingDocument(document);
         setEditedContent(editedContent);
         setShowEditWindow(true);
+
     };
+    const handleViewClick = (document) => {
+        // Create a copy of document.content without the 'summary' key
+        const { summary, pending, ...editedContent } = document.content;
+
+        setEditingDocument(document);
+        setEditedContent(editedContent);
+        setShowNonEditWindow(true);
+
+    }
 
     const handleSummaryClick = (document) => {
         setSelectedDocument(document);
@@ -88,6 +99,62 @@ const AdminViewInfo = () => {
         summaryWindow.document.close();
     };
 
+    const renderNonEditWindow = () => {
+        if (!showNonEditWindow || !editingDocument) return null;
+
+        const handleCancelClick = () => {
+            setEditingDocument(null);
+            setShowNonEditWindow(false);
+        };
+
+        return (
+            <div className="absolute top-0 left-0 w-screen h-screen bg-gray-200 bg-opacity-80 flex items-center justify-center">
+                <div className="bg-white p-4 rounded-lg shadow-md w-2/4 h-2/4">
+                    <h2 className="text-2xl font-semibold mb-4">
+                        {" "}
+                        {editingDocument.name} Content
+                    </h2>
+                    <div className="max-h-60 overflow-auto">
+                        <table className="w-full mb-4">
+                            <tbody>
+                                {Object.entries(editingDocument.content).map(([key, value], index) => {
+                                    if (key !== 'summary' && key !== 'pending') {
+                                        return (
+                                            <tr key={index}>
+                                                <td className="w-1/2 text-right pr-2">
+                                                    <input
+                                                        type="text"
+                                                        value={key}
+                                                        className="w-full border border-gray-300 rounded-md p-1 text-lg"
+                                                    />
+                                                </td>
+                                                <td className="w-1/2">
+                                                    <input
+                                                        type="text"
+                                                        value={value}
+                                                        className="w-full border border-gray-300 rounded-md p-1 text-lg"
+                                                    />
+                                                </td>
+                                            </tr>
+                                        );
+                                    }
+                                    return null; // Don't render a row for 'summary'
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="text-center">
+                        <button
+                            onClick={handleCancelClick}
+                            className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus-ring focus-ring-indigo-200"
+                        >
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     const renderEditWindow = () => {
         if (!showEditWindow || !editingDocument) return null;
@@ -148,6 +215,13 @@ const AdminViewInfo = () => {
                 const docId = editingDocument.id;
                 console.log("editedContent", editedContent)
                 const updatedContent = { file_content: editedContent };
+
+                
+                // if (!updatedContent.file_content) {
+                //     updatedContent.file_content = { pending: true };
+                //   } else if (!updatedContent.file_content.hasOwnProperty("pending")) {
+                //     updatedContent.file_content.pending = true;
+                // }
 
                 try {
                     const response = await Axios.patch(
@@ -255,7 +329,7 @@ const AdminViewInfo = () => {
                         </button>
                         <button
                             onClick={handleCancelClick}
-                            className="bg-red-500 text-white px-4 py-2 rounded-md hover-bg-red-600"
+                            className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
                         >
                             Cancel
                         </button>
@@ -269,80 +343,107 @@ const AdminViewInfo = () => {
 
 
     return (
-        <div className="p-4 min-h-screen bg-gradient-to-b from-blue-200 via-blue-300 to-blue-200">
-            <button
-                onClick={handleGoBack}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md focus:ring focus:ring-indigo-200"
-            >
-                <span className='font-black '>&#10229;</span> Go Back
-            </button>
-            <h1 className="text-2xl font-semibold text-center mb-6 text-gray-800">
-                Documents Uploaded by {userEmail}
-            </h1>
+        <>
+            <Navbar jwtToken={jwtToken} />
 
-            <table className="w-full mt-4 bg-white rounded-lg shadow">
-                <thead>
-                    <tr>
-                        <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                            Name of Document
-                        </th>
-                        <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                            Uploaded
-                        </th>
-                        <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                            Last Modified
-                        </th>
-                        {/* <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+            <div className="p-4 min-h-screen bg-gradient-to-b from-blue-200 via-blue-300 to-blue-200">
+                <button
+                    onClick={handleGoBack}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md focus:ring focus:ring-indigo-200"
+                >
+                    <span className='font-black '>&#10229;</span> Go Back
+                </button>
+                <h1 className="text-2xl font-semibold text-center mb-6 text-gray-800">
+                    Documents Uploaded by {userEmail}
+                </h1>
+
+                <table className="w-full mt-4 bg-white rounded-lg shadow">
+                    <thead>
+                        <tr>
+                            <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                                Name of Document
+                            </th>
+                            <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                                Uploaded
+                            </th>
+                            <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                                Last Modified
+                            </th>
+                            {/* <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                             File Content
                         </th> */}
-                        <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                            View/Edit
-                        </th>
-                        {/* <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                            <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                                View/Edit
+                            </th>
+                            <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                                Update Status
+                            </th>
+                            {/* <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                             Summary View
                         </th> */}
-                    </tr>
-                </thead>
-                <tbody>
-                    {userDocs
-                        .slice() // Create a shallow copy of the array to avoid modifying the original
-                        .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
-                        .map((document, index) => (
-                            <tr
-                                key={document.id}
-                                className={`${index % 2 === 0 ? 'bg-blue-100' : 'bg-blue-200'} hover:bg-blue-300 transition duration-300`}
-                            >
-                                <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                                    {document.name}
-                                </td>
-                                <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                                    {new Date(document.created_at).toLocaleString()}
-                                </td>
-                                <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                                    {new Date(document.updated_at).toLocaleString()}
-                                </td>
-                                <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                                    <button
-                                        onClick={() => handleEditClick(document)}
-                                        className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus:ring focus:ring-indigo-200"
-                                    >
-                                        View / Edit
-                                    </button>
-                                </td>
-                                {/* <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {userDocs
+                            .slice() // Create a shallow copy of the array to avoid modifying the original
+                            .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+                            .map((document, index) => (
+                                <tr
+                                    key={document.id}
+                                    className={`${index % 2 === 0 ? 'bg-blue-100' : 'bg-blue-200'} hover:bg-blue-300 transition duration-300`}
+                                >
+                                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                                        {document.name}
+                                    </td>
+                                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                                        {new Date(document.created_at).toLocaleString()}
+                                    </td>
+                                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                                        {new Date(document.updated_at).toLocaleString()}
+                                    </td>
+                                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                                        <button
+                                            onClick={() => {
+                                                const isPending = document.file_content?.pending ?? false;
+
+                                                if (isPending) {
+                                                    handleViewClick(document);
+                                                } else {
+                                                    handleEditClick(document);
+                                                }
+                                            }}
+                                            className="py-2 px-4 bg-indigo-600 hover-bg-indigo-700 text-white rounded-md focus:ring focus:ring-indigo-200"
+                                        >
+                                            {document.file_content?.pending === true ? "View Only" : "Edit / View"}
+                                        </button>
+                                    </td>
+
+
+                                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                                        <button
+                                            className={`py-2 px-4 ${document.content.pending
+                                                ? "bg-red-600 hover:bg-red-700"
+                                                : "bg-green-600 hover:bg-green-700"
+                                                } text-white rounded-md focus-ring focus-ring-indigo-200`}
+                                        >
+                                            {document.content.pending ? "Pending" : "Updated"}
+                                        </button>
+                                    </td>
+                                    {/* <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                                     <button
                                         onClick={() => handleSummaryClick(document)}
-                                        className="py-2 px-4 bg-indigo-600 hover-bg-indigo-700 text-white rounded-md focus:ring focus:ring-indigo-200"
+                                        className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus:ring focus:ring-indigo-200"
                                     >
                                         Summary
                                     </button>
                                 </td> */}
-                            </tr>
-                        ))}
-                </tbody>
-            </table>
-            {renderEditWindow()}
-        </div>
+                                </tr>
+                            ))}
+                    </tbody>
+                </table>
+                {renderEditWindow()}
+            </div>
+        </>
     );
 };
 

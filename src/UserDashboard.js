@@ -3,6 +3,7 @@ import { storage } from "./firebase";
 import { ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
 import Axios from "axios";
+import Navbar from './Navbar.js';
 
 function UserPage() {
   const [selectedPdf, setSelectedPdf] = useState(null);
@@ -64,7 +65,7 @@ function UserPage() {
             <table className="w-full mb-4">
               <tbody>
                 {Object.entries(editingDocument.content).map(([key, value], index) => {
-                  if (key !== 'summary') {
+                  if (key !== 'summary' && key !== 'pending') {
                     return (
                       <tr key={index}>
                         <td className="w-1/2 text-right pr-2">
@@ -92,7 +93,7 @@ function UserPage() {
           <div className="text-center">
             <button
               onClick={handleCancelClick}
-              className="py-2 px-4 bg-indigo-600 hover-bg-indigo-700 text-white rounded-md focus-ring focus-ring-indigo-200"
+              className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus-ring focus-ring-indigo-200"
             >
               Back
             </button>
@@ -190,117 +191,126 @@ function UserPage() {
   };
 
   return (
-    <div className="bg-blue-200 h-screen p-8">
-      <h1 className="text-black text-center text-4xl font-bold py-10">
-        Welcome User!
-      </h1>
-      <div
-        className="bg-slate-100 text-center mx-96 py-6 border-2 rounded-lg border-black space-y-5"
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handlePdfDrop}
-      >
-        {selectedPdf ? (
-          <div>
-            <p className="text-2xl bg-slate mb-4">
-              PDF Selected: {selectedPdf.name}
-            </p>
-            <button
-              onClick={clearSelectedPdf}
-              className="rounded-lg border-2 border-black text-black bg-red-300 px-20 py-2 hover:text-white hover-bg-red-500 font-medium active-bg-red-300 active-text-black"
-            >
-              Clear PDF
-            </button>
-          </div>
-        ) : (
-          <div>
-            <p className="text-3xl bg-slate my-4">Drop PDF here</p>
-            <p className="my-4">or</p>
-            <label className="cursor-pointer rounded-lg border-2 border-black text-black bg-blue-300 px-20 py-2 hover:text-white hover-bg-blue-500 font-medium active-bg-blue-300 active-text-black">
-              Select PDF from your device
-              <input
-                type="file"
-                accept=".pdf"
-                className="hidden"
-                onChange={handlePdfSelect}
-              />
-            </label>
-          </div>
-        )}
-      </div>
-
-      <div className="flex justify-center items-center mt-4">
-        <button
-          onClick={handleUpload}
-          className="p-2 m-1 bg-indigo-600 hover-bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
+    <>
+      <Navbar jwtToken={jwtToken} />
+      <div className="bg-blue-200 min-h-screen p-8">
+        <h1 className="text-black text-center text-4xl font-bold py-10">
+          Welcome User!
+        </h1>
+        <div
+          className="bg-slate-100 text-center mx-96 py-6 border-2 rounded-lg border-black space-y-5"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handlePdfDrop}
         >
-          Upload
-        </button>
-      </div>
+          {selectedPdf ? (
+            <div>
+              <p className="text-2xl bg-slate mb-4">
+                PDF Selected: {selectedPdf.name}
+              </p>
+              <button
+                onClick={clearSelectedPdf}
+                className="rounded-lg border-2 border-black text-black bg-red-300 px-20 py-2 hover:text-white hover:bg-red-500 font-medium active-bg-red-300 active-text-black"
+              >
+                Clear PDF
+              </button>
+            </div>
+          ) : (
+            <div>
+              <p className="text-3xl bg-slate my-4">Drop PDF here</p>
+              <p className="my-4">or</p>
+              <label className="cursor-pointer rounded-lg border-2 border-black text-black bg-blue-300 px-20 py-2 hover:text-white hover:bg-blue-500 font-medium active-bg-blue-300 active-text-black">
+                Select PDF from your device
+                <input
+                  type="file"
+                  accept=".pdf"
+                  className="hidden"
+                  onChange={handlePdfSelect}
+                />
+              </label>
+            </div>
+          )}
+        </div>
 
-      {documents.length === 0 ? (
-        <p className="text-center text-2xl mt-4">No documents available.</p>
-      ) : (
-        <>
-          <table className="w-full mt-4 bg-white rounded-lg shadow">
-            <thead>
-              <tr>
-                <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                  Name of Document
-                </th>
-                <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                  Uploaded
-                </th>
-                <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                  Last Modified
-                </th>
-                <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                  View
-                </th>
-                {/* <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+        <div className="flex justify-center items-center mt-4">
+          <button
+            onClick={handleUpload}
+            className="p-2 px-8 m-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md"
+          >
+            Upload
+          </button>
+        </div>
+
+        {documents.length === 0 ? (
+          <p className="text-center text-2xl mt-4">No documents available.</p>
+        ) : (
+          <>
+            <table className="w-full mt-4 bg-white rounded-lg shadow">
+              <thead>
+                <tr>
+                  <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                    Name of Document
+                  </th>
+                  <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                    Uploaded
+                  </th>
+                  <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                    Last Modified
+                  </th>
+                  <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                    View Contents
+                  </th>
+                  <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                    Update Status
+                  </th>
+                  {/* <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                   Summary View
                 </th> */}
-              </tr>
-            </thead>
-            <tbody>
-              {documents.map((document, index) => (
-                <tr
-                  key={document.id}
-                  className={`${index % 2 === 0 ? "bg-blue-100" : "bg-blue-200"
-                    } hover-bg-blue-300 transition duration-300`}
-                >
-                  <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                    {document.name}
-                  </td>
-                  <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                    {new Date(document.created_at).toLocaleString()}
-                  </td>
-                  <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                    {new Date(document.updated_at).toLocaleString()}
-                  </td>
-                  <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                    <button
-                      onClick={() => handleEditClick(document)}
-                      className="py-2 px-4 bg-indigo-600 hover-bg-indigo-700 text-white rounded-md focus-ring focus-ring-indigo-200"
-                    >
-                      View
-                    </button>
-                  </td>
-                  {/* <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                    <button
-                      onClick={() => handleSummaryClick(document)}
-                      className="py-2 px-4 bg-indigo-600 hover-bg-indigo-700 text-white rounded-md focus-ring focus-ring-indigo-200"
-                    >
-                      Summary
-                    </button>
-                  </td> */}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {renderEditWindow()}
-        </>
-      )}
-    </div>
+              </thead>
+              <tbody>
+                {documents.map((document, index) => (
+                  <tr
+                    key={document.id}
+                    className={`${index % 2 === 0 ? "bg-blue-100" : "bg-blue-200"
+                      } hover:bg-blue-300 transition duration-300`}
+                  >
+                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                      {document.name}
+                    </td>
+                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                      {new Date(document.created_at).toLocaleString()}
+                    </td>
+                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                      {new Date(document.updated_at).toLocaleString()}
+                    </td>
+                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                      <button
+                        onClick={() => handleEditClick(document)}
+                        className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus-ring focus-ring-indigo-200"
+                      >
+                        View
+                      </button>
+                    </td>
+                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                      <button
+                        className={`py-2 px-4 ${document.content.pending
+                            ? "bg-red-600 hover:bg-red-700"
+                            : "bg-green-600 hover:bg-green-700"
+                          } text-white rounded-md focus-ring focus-ring-indigo-200`}
+                      >
+                        {document.content.pending ? "Pending" : "Updated"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+
+            </table>
+            {renderEditWindow()}
+          </>
+        )}
+      </div>
+    </>
   );
 }
 

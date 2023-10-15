@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Login({updateJwtToken}) {
+function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -48,7 +48,7 @@ function Login({updateJwtToken}) {
         if (response.ok) {
           // Successful login
           const jwtToken = result.token;
-          updateJwtToken(jwtToken);
+          //updateJwtToken(jwtToken);
           // Store the token in local storage
           localStorage.setItem('jwtToken', jwtToken);
   

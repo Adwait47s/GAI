@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import Axios from "axios";
+import Navbar from './Navbar.js';
 
 const AdminPage = () => {
   const navigate = useNavigate();
@@ -108,6 +109,7 @@ const AdminPage = () => {
 
   return (
     <>
+     <Navbar jwtToken={jwtToken} />
       <div className="p-4 bg-gradient-to-b from-blue-200 via-blue-300 to-blue-200">
         <h2 className="text-3xl text-center text-gray-800 font-semibold mb-4">Upload Document</h2>
         <div
@@ -129,7 +131,7 @@ const AdminPage = () => {
             <div>
               <p className="text-3xl bg-slate my-4">Drop PDF here</p>
               <p className="my-4">or</p>
-              <label className="cursor-pointer rounded-lg border-2 border-black text-black bg-blue-300 px-20 py-2 hover:text-white hover-bg-blue-500 font-medium active-bg-blue-300 active:text-black">
+              <label className="cursor-pointer rounded-lg border-2 border-black text-black bg-blue-300 px-20 py-2 hover:text-white hover:bg-blue-500 font-medium active-bg-blue-300 active:text-black">
                 Select PDF from your device
                 <input
                   type="file"
@@ -145,25 +147,24 @@ const AdminPage = () => {
         <div className="flex flex-col items-center mt-4">
           <button
             onClick={handleUpload}
-            className="p-2 m-1 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
+            className="p-2 px-20 m-1 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
           >
             Upload
           </button>
           <button
-            className="p-2 m-1 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
+            className="p-2 px-2 m-1 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
             onClick={() => navigate('/AdminViewInfo', { state: { userEmail: adminemail, userId: adminId } })}
           >
             View Uploaded Documents
           </button>
         </div>
 
-        <div className="mt-4"></div>
+        <div className="mt-4 px-4">
 
-        <h1 className="text-3xl font-semibold text-center mb-6 text-gray-800">User List</h1>
+        <h1 className="text-3xl my-4 mt-10 font-semibold text-center mb-6 text-gray-800">Users List</h1>
 
-        <div className="mt-4"></div>
 
-        <table className="w-full mt-4 bg-white rounded-lg shadow">
+        <table className="w-full px-72 mt-4 bg-white rounded-lg shadow">
           <thead>
             <tr>
               <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
@@ -187,6 +188,7 @@ const AdminPage = () => {
           </tbody>
 
         </table>
+        </div>
       </div>
     </>
   );

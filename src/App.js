@@ -18,9 +18,9 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Navbar jwtToken={jwtToken} /> {/* Pass the jwtToken as a prop */}
+        {/* Pass the jwtToken as a prop */}
         <Routes>
-          <Route path="/" element={<Login updateJwtToken={updateJwtToken} />} /> {/* Pass the updateJwtToken function to Login */}
+          <Route path="/" element={<Login  />} /> {/* Pass the updateJwtToken function to Login */}
           <Route path="/AdminViewInfo" element={<AdminViewInfo />} />
           <Route path="/AdminPage" element={<AdminPage />} />
           <Route path="/UserPage" element={<UserPage />} />
