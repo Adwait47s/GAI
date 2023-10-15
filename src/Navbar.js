@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 function Navbar() {
   const [jwtToken, setJwtToken] = useState(localStorage.getItem('jwtToken'));
-  console.log('JWT Token stored:', jwtToken);
+  //console.log('JWT Token stored:', jwtToken);
   useEffect(() => {
     // Update the JWT token state when it changes in local storage
     const tokenFromStorage = localStorage.getItem('jwtToken');

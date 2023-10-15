@@ -161,7 +161,7 @@ function UserPage() {
 
     const config = {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${jwtToken}`,
       },
     };
@@ -293,7 +293,7 @@ function UserPage() {
                     </td>
                     <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                       <button
-                        className={`py-2 px-4 ${document.content.pending
+                        className={`py-2 px-4 ${document.content.pending === "true"
                             ? "bg-red-600 hover:bg-red-700"
                             : "bg-green-600 hover:bg-green-700"
                           } text-white rounded-md focus-ring focus-ring-indigo-200`}

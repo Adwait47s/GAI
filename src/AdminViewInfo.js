@@ -6,6 +6,8 @@ import Navbar from './Navbar.js';
 
 const AdminViewInfo = () => {
     const [editingDocument, setEditingDocument] = useState(null);
+    const [editingDocument2, setEditingDocument2] = useState(null);
+    const [editedContent2, setEditedContent2] = useState({});
     const [editedContent, setEditedContent] = useState({});
     const [selectedDocument, setSelectedDocument] = useState({});
     const [newKeyValuePair, setNewKeyValuePair] = useState({ key: '', value: '' });
@@ -36,6 +38,7 @@ const AdminViewInfo = () => {
 
                 if (response.data.ok === 1 && response.data.docs) {
                     setUserDocs(response.data.docs);
+                    console.log("userDocs", response.data.docs);
                 }
             } catch (error) {
                 console.error("Error fetching user documents:", error);
@@ -53,19 +56,26 @@ const AdminViewInfo = () => {
     const handleEditClick = (document) => {
         // Create a copy of document.content without the 'summary' key
         const { summary, pending, ...editedContent } = document.content;
-
+        // console.log("in edit click", editedContent)
         setEditingDocument(document);
         setEditedContent(editedContent);
         setShowEditWindow(true);
+        setShowNonEditWindow(false);
 
+        // console.log("in edit click", editingDocument)
+        // console.log("in edit click", showEditWindow)
     };
     const handleViewClick = (document) => {
         // Create a copy of document.content without the 'summary' key
-        const { summary, pending, ...editedContent } = document.content;
-
-        setEditingDocument(document);
-        setEditedContent(editedContent);
+        const { summary, pending, ...editedContent2 } = document.content;
+       
+        setEditingDocument2(document);
+    
+        setEditedContent2(editedContent2);
         setShowNonEditWindow(true);
+        setShowEditWindow(false);
+        // console.log("in view click", editingDocument2)
+        // console.log("in view click", showNonEditWindow)
 
     }
 
@@ -100,10 +110,10 @@ const AdminViewInfo = () => {
     };
 
     const renderNonEditWindow = () => {
-        if (!showNonEditWindow || !editingDocument) return null;
+        if (!showNonEditWindow || !editingDocument2) return null;
 
         const handleCancelClick = () => {
-            setEditingDocument(null);
+            setEditingDocument2(null);
             setShowNonEditWindow(false);
         };
 
@@ -112,12 +122,12 @@ const AdminViewInfo = () => {
                 <div className="bg-white p-4 rounded-lg shadow-md w-2/4 h-2/4">
                     <h2 className="text-2xl font-semibold mb-4">
                         {" "}
-                        {editingDocument.name} Content
+                        {editingDocument2.name} Content
                     </h2>
                     <div className="max-h-60 overflow-auto">
                         <table className="w-full mb-4">
                             <tbody>
-                                {Object.entries(editingDocument.content).map(([key, value], index) => {
+                                {Object.entries(editingDocument2.content).map(([key, value], index) => {
                                     if (key !== 'summary' && key !== 'pending') {
                                         return (
                                             <tr key={index}>
@@ -217,11 +227,11 @@ const AdminViewInfo = () => {
                 const updatedContent = { file_content: editedContent };
 
                 
-                // if (!updatedContent.file_content) {
-                //     updatedContent.file_content = { pending: true };
-                //   } else if (!updatedContent.file_content.hasOwnProperty("pending")) {
-                //     updatedContent.file_content.pending = true;
-                // }
+                if (!updatedContent.file_content) {
+                    updatedContent.file_content = { pending: "true" };
+                  } else if (!updatedContent.file_content.hasOwnProperty("pending")) {
+                    updatedContent.file_content.pending = "true";
+                }
 
                 try {
                     const response = await Axios.patch(
@@ -261,7 +271,7 @@ const AdminViewInfo = () => {
 
         return (
             <div className="absolute top-0 left-0 w-screen h-screen bg-gray-200 bg-opacity-80 flex items-center justify-center">
-                <div className="bg-white p-4 rounded-lg shadow-md w-2/4 h-2/4">
+                <div className="bg-white p-4 rounded-lg shadow-md w-2/4 h-3/4">
                     <h2 className="text-2xl font-semibold mb-4">Edit {editingDocument.name}</h2>
                     <div className="max-h-60 overflow-auto">
                         <table className="w-full mb-4">
@@ -404,29 +414,29 @@ const AdminViewInfo = () => {
                                     <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                                         <button
                                             onClick={() => {
-                                                const isPending = document.file_content?.pending ?? false;
+                                                document.content?.pending === 'true' ? handleViewClick(document) : handleEditClick(document);
 
-                                                if (isPending) {
-                                                    handleViewClick(document);
-                                                } else {
-                                                    handleEditClick(document);
-                                                }
+                                                // if (isPending) {
+                                                //     ;
+                                                // } else {
+                                                //     ;
+                                                // }
                                             }}
                                             className="py-2 px-4 bg-indigo-600 hover-bg-indigo-700 text-white rounded-md focus:ring focus:ring-indigo-200"
                                         >
-                                            {document.file_content?.pending === true ? "View Only" : "Edit / View"}
+                                            {document.content?.pending === 'true' ? "View Only" : "Edit / View"}
                                         </button>
                                     </td>
 
 
                                     <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                                         <button
-                                            className={`py-2 px-4 ${document.content.pending
+                                            className={`py-2 px-4 ${document.content?.pending === "true"
                                                 ? "bg-red-600 hover:bg-red-700"
                                                 : "bg-green-600 hover:bg-green-700"
                                                 } text-white rounded-md focus-ring focus-ring-indigo-200`}
                                         >
-                                            {document.content.pending ? "Pending" : "Updated"}
+                                            {document.content?.pending ? "Pending" : "Updated"}
                                         </button>
                                     </td>
                                     {/* <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
@@ -442,6 +452,7 @@ const AdminViewInfo = () => {
                     </tbody>
                 </table>
                 {renderEditWindow()}
+                {renderNonEditWindow()}
             </div>
         </>
     );
