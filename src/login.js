@@ -1,46 +1,113 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Login() {
+function Login({updateJwtToken}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
   const [isAdmin, setAdmin] = useState(true); // currently default route is set to adminpage as isAdmin is 1
-
   const navigate = useNavigate();
 
-  const adminchange = () => {
-    // from backend check if the user is admin or not
-    setAdmin(!isAdmin);
-  }
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    localStorage.removeItem('jwtToken');
+  }, []);
+
+  const handleLoginRegisterToggle = () => {
+    // Toggle between login and register forms
+    setIsLogin(!isLogin);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // backend , perform validation and authentication and remember me here
-    console.log('Email:', email);
-    console.log('Password:', password);
-    console.log('Remember Me:', rememberMe);
-
-    // Clear the error message
-    setError('');
-
-    if (isAdmin) {
-      navigate('/AdminPage');
-    } 
-    else {
-      navigate('/UserPage');
+  
+    // Create a data object for the API request
+    const data = {
+      email,
+      password,
+    };
+  
+    // Define the API endpoint URL based on whether it's for login or sign-up
+    const apiUrl = isLogin
+      ? 'https://word-extractor-apis.onrender.com/login'
+      : 'https://word-extractor-apis.onrender.com/register';
+  
+    try {
+      // Make a POST request to the API endpoint
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+  
+      const result = await response.json();
+      console.log('API response:', result); // Log
+      if (isLogin) {
+        if (response.ok) {
+          // Successful login
+          const jwtToken = result.token;
+          updateJwtToken(jwtToken);
+          // Store the token in local storage
+          localStorage.setItem('jwtToken', jwtToken);
+  
+          // Parse the JWT token to check if the user is admin
+          const decodedToken = JSON.parse(atob(jwtToken.split('.')[1]));
+  
+          if (decodedToken.is_admin) {
+            setAdmin(true);
+            navigate('/AdminPage');
+          } else {
+            setAdmin(false);
+            navigate('/UserPage');
+          }
+  
+          // Clear the error message
+          setError('');
+        } else {
+          // Handle login API error (e.g., incorrect credentials)
+          setError(result.message || 'An error occurred');
+        }
+      } else {
+        // Registration flow
+        if (response.ok) {
+          // Successful registration
+          const jwtToken = result.token;
+  
+          // Store the token in local storage
+          localStorage.setItem('jwtToken', jwtToken);
+  
+          // Automatically log in after successful registration
+          if (result.user && result.user.isadmin) {
+            setAdmin(true);
+            navigate('/AdminPage');
+          } else {
+            setAdmin(false);
+            navigate('/UserPage');
+          }
+  
+          // Clear the error message
+          setError('');
+        } else {
+          // Handle registration API error (e.g., user already exists)
+          setError(result.message || 'An error occurred during registration.');
+        }
+      }
+    } catch (error) {
+      // Handle network errors
+      setError('Network error. Please try again.');
     }
   };
 
   return (
     <div className="flex flex-col min-h-screen">
       {/* Login Form */}
-      <div className="p-30 flex-grow flex items-center justify-center bg-blue-300 font-sans">
+      <div className="p-30 py-10 flex-grow flex items-center justify-center bg-blue-300 font-sans">
         <div className='bg-blue-200 py-10 pl-72 pr-72'>
-          <div className="px-12 py-24 bg-slate-100 rounded-md shadow-lg">
+          <div className="px-16 py-16 bg-slate-100 rounded-md shadow-lg">
             <h2 className="text-3xl mb-8 font-bold text-center text-gray-800">Login</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='w-72'>
               <div className="mb-6">
                 <label htmlFor="email" className="block text-base font-medium text-gray-700 ml-1">
                   Email:
@@ -71,35 +138,20 @@ function Login() {
                   required
                 />
               </div>
-              <div className="flex justify-between space-x-14 items-center mb-4">
-                <div>
-                  <input
-                    type="checkbox"
-                    id="rememberMe"
-                    className="text-indigo-600 focus:ring-indigo-500 rounded"
-                    checked={rememberMe}
-                    onChange={() => setRememberMe(!rememberMe)}
-                  />
-                  <label htmlFor="rememberMe" className="text-base ml-2 text-gray-700">
-                    Remember Me
-                  </label>
-                </div>
-                <div>
-                  <button
-                    type="button"
-                    className="text-indigo-600 hover:underline"
-                  >
-                    Forgot Password?
-                  </button>
-                </div>
-              </div>
               <div className="text-center py-3">
-                <button
-                  type="submit"
-                  className="py-2 px-5 bg-blue-500 hover:bg-blue-700 active:bg-blue-500 focus:ring focus:ring-indigo-200 text-white rounded-md text-center"
-                >
-                  Login
-                </button>
+              <button
+                type="submit"
+                className="h-12 w-full mb-4 bg-blue-600 hover:bg-blue-700 focus:ring focus:ring-blue-200 text-white rounded-md"
+              >
+                {isLogin ? 'Login' : 'Register'}
+              </button>
+              <button
+                type="button"
+                className="h-12 w-full bg-blue-400 hover:bg-blue-700 focus:ring focus:ring-blue-200 text-white rounded-md"
+                onClick={handleLoginRegisterToggle}
+              >
+                {isLogin ? 'Switch to Register' : 'Switch to Login'}
+              </button>
               </div>
             </form>
           </div>

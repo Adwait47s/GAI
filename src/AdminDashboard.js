@@ -1,42 +1,41 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
-
-let uploadedDocumentsAdmin = [];  // backend fetch documents uploaded by admin into this array
+import React, { useState, useEffect } from 'react';
+import Axios from "axios";
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  
+  const [jwtToken] = useState(localStorage.getItem("jwtToken"));
+  const [users, setUsers] = useState([]);
   const [selectedPdf, setSelectedPdf] = useState(null);
+  const [adminId, setAdminId] = useState(null);
+  const [adminemail, setAdminEmail] = useState(null);
 
-  const dummyData = [];
-  // JavaScript script to generate dummy data
-  // Get the data from the backend
-  for (let i = 1; i <= 20; i++) {
-    const user = {
-      email: `user${i}@gmail.com`,
-      documents: [],
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await Axios.get("https://word-extractor-apis.onrender.com/admin/users", {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        });
+
+        if (response.data.ok === 1 && response.data.users) {
+          const nonAdminUsers = response.data.users.filter(user => user.isadmin === false);
+          setUsers(nonAdminUsers);
+          const adminUser = response.data.users.find(user => user.isadmin === true);
+          if (adminUser) {
+            setAdminId(adminUser.id);
+            setAdminEmail(adminUser.email);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
     };
 
-    const numDocuments = Math.floor(Math.random() * 9) + 2;
+    fetchUsers();
+  }, [jwtToken]); // Fetch users when the component mounts and whenever jwtToken changes
 
-    for (let j = 1; j <= numDocuments; j++) {
-      const document = {
-        id: j,
-        name: `Document ${j}`,
-        uploaded: `2023-10-${j < 10 ? '0' + j : j}`,
-        lastModified: `2023-10-${j < 10 ? '0' + j : j}`,
-        content: {
-          asd: "2",
-          asdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: "2",
-          asdfv: "1",
-        },
-        summary: `Summary of Document ${j}`,
-      };
-      user.documents.push(document);
-    }
-
-    dummyData.push(user);
-  }
 
   const handlePdfDrop = (event) => {
     event.preventDefault();
@@ -59,33 +58,52 @@ const AdminPage = () => {
 
   const handleUpload = async () => {
     if (!selectedPdf) {
-      alert('No PDF chosen. Please select a PDF file before uploading.');
+      alert("No PDF chosen. Please select a PDF file before uploading.");
       return;
     }
-    
-    const j = uploadedDocumentsAdmin.length + 1;
-    const currentDate = new Date().toLocaleString();
-    const pdfName = selectedPdf.name;
 
-    const newDocument = {
-      id: j,
-      name: pdfName,
-      uploaded: currentDate,
-      lastModified: currentDate,
-      content: {
-        asd: "2",
-        asdaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: "2",
-        asdfv: "1",
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwtToken}`,
       },
-      summary: `Summary of Document ${pdfName}`,
     };
 
-    uploadedDocumentsAdmin.push(newDocument);
-    setSelectedPdf(null);
+    const formData = new FormData();
+    formData.append('file', selectedPdf);
+
+    try {
+      // const newDocument = {
+      //   file_name: selectedPdf.name,
+      //   file_content: {
+      //     summary: "Summary of the uploaded document",
+      //     sample_key1: "sample_value_admin1",
+      //     sample_key2: "sample_value_admin2",
+      //   },
+      //   file_link: "sample-linkk",
+      // };
+      const response = await Axios.post(
+        "https://word-extractor-apis.onrender.com/files",
+        formData,
+        config
+      );
+
+      if (response.status === 200) {
+        alert("Upload successful!");
+        // Successful upload, fetch documents again to update the table
+      } else {
+        // Handle upload error
+        console.error("Upload error:", response.data.message || "An error occurred during upload.");
+      }
+    } catch (error) {
+      console.error("Network error during upload:", error);
+    } finally {
+      clearSelectedPdf();
+    }
   };
 
   const handleUserClick = (user) => {
-    navigate('/AdminViewInfo', { state: { userEmail: user.email, userDoc: user.documents } });
+    navigate('/AdminViewInfo', { state: { userEmail: user.email, userId: user.id } });
   };
 
   return (
@@ -133,7 +151,7 @@ const AdminPage = () => {
           </button>
           <button
             className="p-2 m-1 bg-indigo-600 hover:bg-indigo-700 focus:ring focus:ring-indigo-200 text-white rounded-md"
-            onClick={() => navigate('/AdminDocuments', { state: { AdminDoc :uploadedDocumentsAdmin } })}
+            onClick={() => navigate('/AdminViewInfo', { state: { userEmail: adminemail, userId: adminId } })}
           >
             View Uploaded Documents
           </button>
@@ -154,7 +172,7 @@ const AdminPage = () => {
             </tr>
           </thead>
           <tbody>
-            {dummyData.map((user, index) => (
+            {users.map((user, index) => (
               <tr
                 key={user.email}
                 onClick={() => handleUserClick(user)}
@@ -167,6 +185,7 @@ const AdminPage = () => {
               </tr>
             ))}
           </tbody>
+
         </table>
       </div>
     </>
