@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Navbar from './Navbar';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -8,6 +9,7 @@ function Login() {
   const [isLogin, setIsLogin] = useState(true);
   const [isAdmin, setAdmin] = useState(true); // currently default route is set to adminpage as isAdmin is 1
   const navigate = useNavigate();
+  const jwtToken = localStorage.getItem('jwtToken');
 
   useEffect(() => {
     localStorage.removeItem('jwtToken');
@@ -77,15 +79,19 @@ function Login() {
   
           // Store the token in local storage
           localStorage.setItem('jwtToken', jwtToken);
+          // Successful Registration - Redirect to Login page
+          alert("Registration Successful. Please Login to continue.");
+          navigate('/login');
+
   
-          // Automatically log in after successful registration
-          if (result.user && result.user.isadmin) {
-            setAdmin(true);
-            navigate('/AdminPage');
-          } else {
-            setAdmin(false);
-            navigate('/UserPage');
-          }
+          // // Automatically log in after successful registration
+          // if (result.user && result.user.isadmin) {
+          //   setAdmin(true);
+          //   navigate('/AdminPage');
+          // } else {
+          //   setAdmin(false);
+          //   navigate('/UserPage');
+          // }
   
           // Clear the error message
           setError('');
@@ -101,6 +107,8 @@ function Login() {
   };
 
   return (
+    <>
+  <Navbar jwtToken={jwtToken} />
     <div className="flex flex-col min-h-screen">
       {/* Login Form */}
       <div className="p-30 py-10 flex-grow flex items-center justify-center bg-blue-300 font-sans">
@@ -147,10 +155,10 @@ function Login() {
               </button>
               <button
                 type="button"
-                className="h-12 w-full bg-blue-400 hover:bg-blue-700 focus:ring focus:ring-blue-200 text-white rounded-md"
+                className="h-12 w-full  focus:ring font-bold focus:ring-blue-200 text-blue-500 hover:text-blue-900 rounded-md"
                 onClick={handleLoginRegisterToggle}
               >
-                {isLogin ? 'Switch to Register' : 'Switch to Login'}
+                {isLogin ? 'Switch to Register ↗' : 'Switch to Login ↗ ' }
               </button>
               </div>
             </form>
@@ -159,6 +167,7 @@ function Login() {
         
       </div>
     </div>
+    </>
   );
 }
 

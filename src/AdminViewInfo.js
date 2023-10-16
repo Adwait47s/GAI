@@ -16,11 +16,18 @@ const AdminViewInfo = () => {
     const [jwtToken] = useState(localStorage.getItem("jwtToken"));
 
     const location = useLocation();
-    const userEmail = location.state.userEmail;
-    const userId = location.state.userId;
+    const userEmail = location.state?.userEmail;
+    const userId = location.state?.userId;
     const [userDocs, setUserDocs] = useState([]);
 
     const navigate = useNavigate();
+    //if the jwtToekn is not present, redirect to login page
+    useEffect(() => {
+        if (!jwtToken) {
+            alert("Please login to continue");
+            navigate("/login");
+        }
+    }, [jwtToken, navigate]);
     useEffect(() => {
         const fetchUserDocs = async () => {
             try {

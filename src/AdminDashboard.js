@@ -11,6 +11,14 @@ const AdminPage = () => {
   const [adminId, setAdminId] = useState(null);
   const [adminemail, setAdminEmail] = useState(null);
 
+  //if the jwtToekn is not present, redirect to login page
+  useEffect(() => {
+    if (!jwtToken) {
+      alert("You must be logged in to view this page.");
+      navigate('/login');
+    }
+  }, [jwtToken, navigate]);
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {

@@ -4,6 +4,7 @@ import { ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
 import Axios from "axios";
 import Navbar from './Navbar.js';
+import { useNavigate } from "react-router-dom";
 
 function UserPage() {
   const [selectedPdf, setSelectedPdf] = useState(null);
@@ -12,6 +13,15 @@ function UserPage() {
 
   const [editingDocument, setEditingDocument] = useState(null);
   const [showEditWindow, setShowEditWindow] = useState(false);
+  const navigate = useNavigate();
+
+  //if the jwtToekn is not present, redirect to login page
+  useEffect(() => {
+    if (!jwtToken) {
+      alert("Please login to continue");
+      navigate("/login");
+    }
+  }, [jwtToken, navigate]);
 
   const handleEditClick = (document) => {
     setEditingDocument(document);
@@ -158,6 +168,7 @@ function UserPage() {
     // uploadBytes(storageRef, selectedPdf).then(() => {
     //   alert("Uploaded a file!");
     // });
+    console.log(jwtToken);
 
     const config = {
       headers: {
@@ -240,74 +251,74 @@ function UserPage() {
           </button>
         </div>
 
-        {documents.length === 0 ? (
-          <p className="text-center text-2xl mt-4">No documents available.</p>
-        ) : (
+        {documents && documents.length > 0 ? (
           <>
-            <table className="w-full mt-4 bg-white rounded-lg shadow">
-              <thead>
-                <tr>
-                  <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                    Name of Document
-                  </th>
-                  <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                    Uploaded
-                  </th>
-                  <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                    Last Modified
-                  </th>
-                  <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                    View Contents
-                  </th>
-                  <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                    Update Status
-                  </th>
-                  {/* <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+          <table className="w-full mt-4 bg-white rounded-lg shadow">
+            <thead>
+              <tr>
+                <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                  Name of Document
+                </th>
+                <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                  Uploaded
+                </th>
+                <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                  Last Modified
+                </th>
+                <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                  View Contents
+                </th>
+                <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                  Update Status
+                </th>
+                {/* <th className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
                   Summary View
                 </th> */}
+              </tr>
+            </thead>
+            <tbody>
+              {documents.map((document, index) => (
+                <tr
+                  key={document.id}
+                  className={`${index % 2 === 0 ? "bg-blue-100" : "bg-blue-200"
+                    } hover:bg-blue-300 transition duration-300`}
+                >
+                  <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                    {document.name}
+                  </td>
+                  <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                    {new Date(document.created_at).toLocaleString()}
+                  </td>
+                  <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                    {new Date(document.updated_at).toLocaleString()}
+                  </td>
+                  <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                    <button
+                      onClick={() => handleEditClick(document)}
+                      className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus-ring focus-ring-indigo-200"
+                    >
+                      View
+                    </button>
+                  </td>
+                  <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
+                    <button
+                      className={`py-2 px-4 ${document.content.pending === "true"
+                        ? "bg-red-600 hover:bg-red-700"
+                        : "bg-green-600 hover:bg-green-700"
+                        } text-white rounded-md focus-ring focus-ring-indigo-200`}
+                    >
+                      {document.content.pending ? "Pending" : "Updated"}
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {documents.map((document, index) => (
-                  <tr
-                    key={document.id}
-                    className={`${index % 2 === 0 ? "bg-blue-100" : "bg-blue-200"
-                      } hover:bg-blue-300 transition duration-300`}
-                  >
-                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                      {document.name}
-                    </td>
-                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                      {new Date(document.created_at).toLocaleString()}
-                    </td>
-                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                      {new Date(document.updated_at).toLocaleString()}
-                    </td>
-                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                      <button
-                        onClick={() => handleEditClick(document)}
-                        className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md focus-ring focus-ring-indigo-200"
-                      >
-                        View
-                      </button>
-                    </td>
-                    <td className="border-t-0 border-r-0 border-l-0 border-b border-gray-200 text-center p-3">
-                      <button
-                        className={`py-2 px-4 ${document.content.pending === "true"
-                            ? "bg-red-600 hover:bg-red-700"
-                            : "bg-green-600 hover:bg-green-700"
-                          } text-white rounded-md focus-ring focus-ring-indigo-200`}
-                      >
-                        {document.content.pending ? "Pending" : "Updated"}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+              ))}
+            </tbody>
 
-            </table>
-            {renderEditWindow()}
+          </table>
+          {renderEditWindow()}
           </>
+        ) : (
+          <p className="text-center text-2xl mt-4">No documents available.</p>
         )}
       </div>
     </>

@@ -20,22 +20,26 @@ function Navbar() {
     <nav className="!bg-white-200 my-4 first-line:font-sans font-semibold">
       <div className="flex justify-between text-lg">
         <div>
-          <a href="/" className="ml-8 text-black hover:text-blue-600">
-            Home
-          </a>
+          <button className="ml-8 text-black hover:text-blue-600">
+            PDF-GenAI
+          </button>
         </div>
         <div className="flex space-x-6 pr-8">
-          <a href="/about" className=" text-black hover:text-blue-600">
+          <button className=" text-black hover:text-blue-600">
             About Us
-          </a>
-          <a href="/contact" className=" text-black hover:text-blue-600">
+          </button>
+          <button className=" text-black hover:text-blue-600">
             Contact
-          </a>
+          </button>
           {jwtToken ? ( // Use the dynamic jwtToken state
             <button className="text-black hover:text-blue-600" onClick={handleLogout}>
               Logout
             </button>
-          ) : null}
+          ) : (
+            <button className="text-black hover:text-blue-600" onClick={() => window.location.href = '/login'}>
+              Login
+            </button>
+          )}
         </div>
         {/* More navigation links here */}
       </div>
