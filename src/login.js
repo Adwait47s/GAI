@@ -117,7 +117,7 @@ function Login() {
             <h2 className="text-3xl mb-8 font-bold text-center text-gray-800">Login</h2>
             <form onSubmit={handleSubmit} className='w-72'>
               <div className="mb-6">
-                <label htmlFor="email" className="block text-base font-medium text-gray-700 ml-1">
+                <label htmlFor="email" className="block text-base font-semibold text-gray-700 ml-1">
                   Email:
                 </label>
                 <input
@@ -133,7 +133,7 @@ function Login() {
                 {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
               </div>
               <div className="mb-6">
-                <label htmlFor="password" className="block text-base font-medium text-gray-700 ml-1">
+                <label htmlFor="password" className="block text-base font-semibold text-gray-700 ml-1">
                   Password:
                 </label>
                 <input
@@ -149,13 +149,13 @@ function Login() {
               <div className="text-center py-3">
               <button
                 type="submit"
-                className="h-12 w-full mb-4 bg-blue-600 hover:bg-blue-700 focus:ring focus:ring-blue-200 text-white rounded-md"
+                className="h-12 w-full mb-4 font-bold bg-blue-500 hover:bg-blue-800 focus:ring focus:ring-blue-200 text-white rounded-md"
               >
                 {isLogin ? 'Login' : 'Register'}
               </button>
               <button
                 type="button"
-                className="h-12 w-full  focus:ring font-bold focus:ring-blue-200 text-blue-500 hover:text-blue-900 rounded-md"
+                className="h-12 w-full  focus:ring font-bold focus:ring-blue-200 text-blue-500 hover:text-blue-800 rounded-md"
                 onClick={handleLoginRegisterToggle}
               >
                 {isLogin ? 'Switch to Register ↗' : 'Switch to Login ↗ ' }
